@@ -16,9 +16,23 @@ export type EntityMap = {
   dhw_temperature?: string;
   dhw_target_temperature?: string;
 
+  exhaust_temperature?: string;
+  feeder_temperature?: string;
+  oxygen_level?: string;
+
+  summer_mode?: string;
+  mixer_work_mode?: string;
+  water_heater?: string;
+
   heating_pump_running?: string;
   dhw_pump_running?: string;
   mixer_pump_running?: string;
+
+  circulation_pump_running?: string;
+  fan_running?: string;
+  exhaust_fan_running?: string;
+  feeder_running?: string;
+  lighter_running?: string;
 };
 
 export type EcoMaxDiagramCardConfig = {
@@ -42,6 +56,12 @@ export type EcoMaxDiagramCardConfig = {
 
   /** Width breakpoint (px) used when `layout: auto`. Default: 700. */
   breakpoint?: number;
+
+  /** Show a stats grid with lots of extra information (recommended). Default: true. */
+  show_stats?: boolean;
+
+  /** When `show_stats` is enabled, show compact tiles on narrow layout. Default: true. */
+  compact_stats_on_mobile?: boolean;
 };
 
 export function assertConfig(config: unknown): asserts config is EcoMaxDiagramCardConfig {

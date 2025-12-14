@@ -35,14 +35,25 @@ export type DiagramValues = {
   mixerTarget: string;
   dhwNow: string;
   dhwTarget: string;
+  exhaustTemp: string;
+  feederTemp: string;
+  o2: string;
   boilerLoad: string;
   fuelLevel: string;
   fanPower: string;
   opMode: string;
+  summerMode: string;
+  mixerMode: string;
+  waterHeaterMode: string;
   alertOn: boolean;
   heatingPump: boolean;
   dhwPump: boolean;
   mixerPump: boolean;
+  circulationPump: boolean;
+  fanRunning: boolean;
+  exhaustFanRunning: boolean;
+  feederRunning: boolean;
+  lighterRunning: boolean;
 };
 
 export function computeValues(hass: HomeAssistant, entities: EntityMap): DiagramValues {
@@ -53,11 +64,17 @@ export function computeValues(hass: HomeAssistant, entities: EntityMap): Diagram
   const mixerTarget = fmtTemp(numState(hass, entities.mixer_target_temperature));
   const dhwNow = fmtTemp(numState(hass, entities.dhw_temperature));
   const dhwTarget = fmtTemp(numState(hass, entities.dhw_target_temperature));
+  const exhaustTemp = fmtTemp(numState(hass, entities.exhaust_temperature));
+  const feederTemp = fmtTemp(numState(hass, entities.feeder_temperature));
+  const o2 = fmtPct(numState(hass, entities.oxygen_level));
 
   const boilerLoad = fmtPct(numState(hass, entities.boiler_load));
   const fuelLevel = fmtPct(numState(hass, entities.fuel_level));
   const fanPower = fmtPct(numState(hass, entities.fan_power));
   const opMode = stateOf(hass, entities.state) ?? "---";
+  const summerMode = stateOf(hass, entities.summer_mode) ?? "---";
+  const mixerMode = stateOf(hass, entities.mixer_work_mode) ?? "---";
+  const waterHeaterMode = stateOf(hass, entities.water_heater) ?? "---";
 
   return {
     outside,
@@ -67,14 +84,25 @@ export function computeValues(hass: HomeAssistant, entities: EntityMap): Diagram
     mixerTarget,
     dhwNow,
     dhwTarget,
+    exhaustTemp,
+    feederTemp,
+    o2,
     boilerLoad,
     fuelLevel,
     fanPower,
     opMode,
+    summerMode,
+    mixerMode,
+    waterHeaterMode,
     alertOn: isOn(hass, entities.alert),
     heatingPump: isOn(hass, entities.heating_pump_running),
     dhwPump: isOn(hass, entities.dhw_pump_running),
-    mixerPump: isOn(hass, entities.mixer_pump_running)
+    mixerPump: isOn(hass, entities.mixer_pump_running),
+    circulationPump: isOn(hass, entities.circulation_pump_running),
+    fanRunning: isOn(hass, entities.fan_running),
+    exhaustFanRunning: isOn(hass, entities.exhaust_fan_running),
+    feederRunning: isOn(hass, entities.feeder_running),
+    lighterRunning: isOn(hass, entities.lighter_running)
   };
 }
 
@@ -87,7 +115,7 @@ export function renderDiagramSvg(v: DiagramValues): string {
   const dhwActive = v.dhwPump;
   const mixerActive = v.mixerPump;
 
-  // Pipe classes toggle animated dash offset when active.
+  // Pipe classes toggle animated moving-dot flow when active.
   // Note: we keep it pure SVG+CSS (no external assets) for easy HACS install.
   return `
 <svg class="ecomax" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ecoMAX boiler diagram">
@@ -97,6 +125,13 @@ export function renderDiagramSvg(v: DiagramValues): string {
       <stop offset="55%" stop-color="rgba(80,160,255,0.55)"/>
       <stop offset="100%" stop-color="rgba(0,170,255,0.85)"/>
     </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.8" result="coloredBlur" />
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
 
   <!-- Outdoor temp pill -->
@@ -112,6 +147,20 @@ export function renderDiagramSvg(v: DiagramValues): string {
     <circle class="deviceIcon" cx="-40" cy="-80" r="10"></circle>
   </g>
 
+  <!-- Local sensor pills near boiler -->
+  <g class="pill pill--purple pill--tiny" transform="translate(510 460)">
+    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">Flue ${v.exhaustTemp}</text>
+  </g>
+  <g class="pill pill--purple pill--tiny" transform="translate(510 505)">
+    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">Feeder ${v.feederTemp}</text>
+  </g>
+  <g class="pill pill--purple pill--tiny" transform="translate(510 550)">
+    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">O₂ ${v.o2}</text>
+  </g>
+
   <!-- Tank block -->
   <g transform="translate(980 430)">
     <rect class="tank" x="-85" y="-140" width="170" height="280" rx="70"></rect>
@@ -119,17 +168,36 @@ export function renderDiagramSvg(v: DiagramValues): string {
   </g>
 
   <!-- Main heating loop pipes -->
-  <path class="pipe pipe--hot ${heatingActive ? "pipe--active" : ""}" d="M420 390 H720 V250" />
-  <path class="pipe pipe--cold ${heatingActive ? "pipe--active" : ""}" d="M420 500 H720 V610 H1030" />
+  <path class="pipeBase pipe--hot" d="M420 390 H720 V250" />
+  <path class="pipeFlow pipe--hot ${heatingActive ? "flow--active" : ""}" d="M420 390 H720 V250" />
+  <path class="pipeBase pipe--cold" d="M420 500 H720 V610 H1030" />
+  <path class="pipeFlow pipe--cold ${heatingActive ? "flow--active" : ""}" d="M420 500 H720 V610 H1030" />
 
   <!-- Mixer branch -->
-  <path class="pipe pipe--hot ${mixerActive ? "pipe--active" : ""}" d="M720 250 V180 H820" />
-  <path class="pipe pipe--cold ${mixerActive ? "pipe--active" : ""}" d="M820 180 V250" />
+  <path class="pipeBase pipe--hot" d="M720 250 V180 H820" />
+  <path class="pipeFlow pipe--hot ${mixerActive ? "flow--active" : ""}" d="M720 250 V180 H820" />
+  <path class="pipeBase pipe--cold" d="M820 180 V250" />
+  <path class="pipeFlow pipe--cold ${mixerActive ? "flow--active" : ""}" d="M820 180 V250" />
 
   <!-- DHW branch to tank -->
-  <path class="pipe pipe--hot ${dhwActive ? "pipe--active" : ""}" d="M720 420 H860" />
-  <path class="pipe pipe--hot ${dhwActive ? "pipe--active" : ""}" d="M860 420 H895" />
-  <path class="pipe pipe--cold ${dhwActive ? "pipe--active" : ""}" d="M1030 610 H895 V540" />
+  <path class="pipeBase pipe--hot" d="M720 420 H895" />
+  <path class="pipeFlow pipe--hot ${dhwActive ? "flow--active" : ""}" d="M720 420 H895" />
+  <path class="pipeBase pipe--cold" d="M1030 610 H895 V540" />
+  <path class="pipeFlow pipe--cold ${dhwActive ? "flow--active" : ""}" d="M1030 610 H895 V540" />
+
+  <!-- Pumps (pulse when active) -->
+  <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(720 330)">
+    <circle class="pumpBody" r="15"></circle>
+    <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
+  </g>
+  <g class="pump ${dhwActive ? "pump--active" : ""}" transform="translate(880 420)">
+    <circle class="pumpBody" r="15"></circle>
+    <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
+  </g>
+  <g class="pump ${mixerActive ? "pump--active" : ""}" transform="translate(820 215)">
+    <circle class="pumpBody" r="15"></circle>
+    <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
+  </g>
 
   <!-- Temperature pills -->
   <g class="pill pill--purple" transform="translate(480 350)">
@@ -182,6 +250,12 @@ export function renderDiagramSvg(v: DiagramValues): string {
     <g transform="translate(0 130)">
       <text class="panelLabel" x="0" y="-18" text-anchor="middle">Fan output</text>
       <text class="panelValue" x="0" y="18" text-anchor="middle">${v.fanPower}</text>
+    </g>
+
+    <g transform="translate(0 205)">
+      <text class="panelLabel" x="0" y="-18" text-anchor="middle">Modes</text>
+      <text class="panelValue panelValueSmall" x="0" y="14" text-anchor="middle">${v.summerMode}</text>
+      <text class="panelValue panelValueSmall" x="0" y="42" text-anchor="middle">${v.mixerMode}</text>
     </g>
 
     ${v.alertOn ? `<g transform="translate(0 200)"><text class="panelAlert" x="0" y="0" text-anchor="middle">ALERT</text></g>` : ""}
