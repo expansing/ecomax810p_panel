@@ -131,23 +131,82 @@ const renderDiagramSvg = (v) => {
     <rect class="tankFill" x="-80" y="-135" width="160" height="270" rx="65"></rect>
   </g>
 
-  <!-- Main heating loop -->
-  <path class="pipeBase pipe--hot" d="M420 390 H720 V250" />
-  <path class="pipeFlow pipe--hot ${heatingActive ? "flow--active" : ""}" d="M420 390 H720 V250" />
-  <path class="pipeBase pipe--cold" d="M420 500 H720 V610 H1030" />
-  <path class="pipeFlow pipe--cold ${heatingActive ? "flow--active" : ""}" d="M420 500 H720 V610 H1030" />
+  <!-- Pipe geometry (base) -->
+  <path id="p_hot_main" class="pipeBase pipe--hot" d="M420 390 H720 V250" />
+  <path id="p_cold_main" class="pipeBase pipe--cold" d="M420 500 H720 V610 H1030" />
+  <path id="p_hot_mixer" class="pipeBase pipe--hot" d="M720 250 V180 H820" />
+  <path id="p_cold_mixer" class="pipeBase pipe--cold" d="M820 180 V250" />
+  <path id="p_hot_dhw" class="pipeBase pipe--hot" d="M720 420 H895" />
+  <path id="p_cold_dhw" class="pipeBase pipe--cold" d="M1030 610 H895 V540" />
 
-  <!-- Mixer -->
-  <path class="pipeBase pipe--hot" d="M720 250 V180 H820" />
-  <path class="pipeFlow pipe--hot ${mixerActive ? "flow--active" : ""}" d="M720 250 V180 H820" />
-  <path class="pipeBase pipe--cold" d="M820 180 V250" />
-  <path class="pipeFlow pipe--cold ${mixerActive ? "flow--active" : ""}" d="M820 180 V250" />
+  <!-- Dot paths (direction) -->
+  <path id="d_hot_main" d="M420 390 H720 V250" fill="none" />
+  <path id="d_cold_main" d="M1030 610 H720 V500 H420" fill="none" />
+  <path id="d_hot_mixer" d="M720 250 V180 H820" fill="none" />
+  <path id="d_cold_mixer" d="M820 250 V180" fill="none" />
+  <path id="d_hot_dhw" d="M720 420 H895" fill="none" />
+  <path id="d_cold_dhw" d="M895 540 V610 H1030" fill="none" />
 
-  <!-- DHW -->
-  <path class="pipeBase pipe--hot" d="M720 420 H895" />
-  <path class="pipeFlow pipe--hot ${dhwActive ? "flow--active" : ""}" d="M720 420 H895" />
-  <path class="pipeBase pipe--cold" d="M1030 610 H895 V540" />
-  <path class="pipeFlow pipe--cold ${dhwActive ? "flow--active" : ""}" d="M1030 610 H895 V540" />
+  <g class="flowDots ${heatingActive ? "flow--active" : ""}">
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="0s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.15s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.30s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.45s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.60s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.75s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.90s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-1.05s"><mpath href="#d_hot_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-1.20s"><mpath href="#d_hot_main"/></animateMotion></circle>
+  </g>
+  <g class="flowDots ${heatingActive ? "flow--active" : ""}">
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="0s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.15s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.30s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.45s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.60s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.75s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-0.90s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-1.05s"><mpath href="#d_cold_main"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.35s" repeatCount="indefinite" begin="-1.20s"><mpath href="#d_cold_main"/></animateMotion></circle>
+  </g>
+
+  <g class="flowDots ${mixerActive ? "flow--active" : ""}">
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="0s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.17s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.34s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.51s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.68s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.85s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-1.02s"><mpath href="#d_hot_mixer"/></animateMotion></circle>
+  </g>
+  <g class="flowDots ${mixerActive ? "flow--active" : ""}">
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="0s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.17s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.34s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.51s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.68s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.85s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-1.02s"><mpath href="#d_cold_mixer"/></animateMotion></circle>
+  </g>
+
+  <g class="flowDots ${dhwActive ? "flow--active" : ""}">
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="0s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.17s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.34s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.51s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.68s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.85s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--hot" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-1.02s"><mpath href="#d_hot_dhw"/></animateMotion></circle>
+  </g>
+  <g class="flowDots ${dhwActive ? "flow--active" : ""}">
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="0s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.17s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.34s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.51s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.68s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-0.85s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+    <circle class="flowDot flowDot--cold" r="3.6"><animateMotion dur="1.2s" repeatCount="indefinite" begin="-1.02s"><mpath href="#d_cold_dhw"/></animateMotion></circle>
+  </g>
 
   <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(720 330)">
     <circle class="pumpBody" r="15"></circle>
@@ -227,6 +286,26 @@ const renderDiagramSvg = (v) => {
 };
 
 class EcoMax810pDiagramCard extends HTMLElement {
+  static getConfigElement() {
+    return document.createElement("ecomax810p-diagram-card-editor");
+  }
+
+  static getStubConfig() {
+    return {
+      type: "custom:ecomax810p-diagram-card",
+      title: "ecoMAX810P",
+      show_left_panel: true,
+      show_stats: true,
+      compact_stats_on_mobile: true,
+      layout: "auto",
+      breakpoint: 700,
+      scale: 1,
+      diagram_offset_x: 0,
+      diagram_offset_y: 0,
+      entities: {}
+    };
+  }
+
   constructor() {
     super();
     this._hass = undefined;
@@ -244,6 +323,8 @@ class EcoMax810pDiagramCard extends HTMLElement {
       breakpoint: 700,
       show_stats: true,
       compact_stats_on_mobile: true,
+      diagram_offset_x: 0,
+      diagram_offset_y: 0,
       ...config
     };
     this._render();
@@ -297,7 +378,17 @@ class EcoMax810pDiagramCard extends HTMLElement {
       return;
     }
 
-    const { title, entities, scale, show_left_panel, show_stats, compact_stats_on_mobile } = this._config;
+    const {
+      title,
+      entities,
+      scale,
+      show_left_panel,
+      show_stats,
+      compact_stats_on_mobile,
+      diagram_offset_x,
+      diagram_offset_y,
+      extra_tiles
+    } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
@@ -307,7 +398,8 @@ class EcoMax810pDiagramCard extends HTMLElement {
     const headerAttr = title ? ` header="${esc(title)}"` : "";
     const wrapClass = show_left_panel ? "wrap" : "wrap noLeft";
     const scaleVal = Number.isFinite(scale) ? String(scale) : "1";
-    const xOffsetVal = narrow ? "-160px" : "0px";
+    const xOffsetVal = `${Number.isFinite(diagram_offset_x) ? diagram_offset_x : 0}px`;
+    const yOffsetVal = `${Number.isFinite(diagram_offset_y) ? diagram_offset_y : 0}px`;
 
     const showStats = show_stats !== false;
     const compactStats = !!compact_stats_on_mobile && narrow;
@@ -328,6 +420,53 @@ class EcoMax810pDiagramCard extends HTMLElement {
     const iconPump = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 1 8 8 8 8 0 0 1-8-8Zm8-4 6 4-6 4V8Z"/></svg>`;
     const iconAlert = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2Zm1 14h-2v-2h2v2Zm0-4h-2V8h2v4Z"/></svg>`;
 
+    const iconByKey = {
+      thermo: iconThermo,
+      fire: iconFire,
+      fan: iconFan,
+      pump: iconPump,
+      alert: iconAlert
+    };
+
+    const fmtAuto = (ent) => {
+      if (!ent) return "---";
+      const s = ent.state;
+      if (s == null) return "---";
+      const unit = typeof ent.attributes?.unit_of_measurement === "string" ? ent.attributes.unit_of_measurement : undefined;
+      const n = Number(s);
+      if (Number.isFinite(n) && unit === "°C") return `${Math.round(n)}°C`;
+      if (Number.isFinite(n) && unit === "%") return `${Math.round(n)}%`;
+      if (s === "on" || s === "off") return s === "on" ? "On" : "Off";
+      return String(s);
+    };
+
+    const extraTilesHtml =
+      Array.isArray(extra_tiles) && extra_tiles.length
+        ? extra_tiles
+            .map((t) => {
+              const ent = this._hass?.states?.[t.entity];
+              const label = t.label ?? t.entity;
+              const icon = iconByKey[t.icon ?? "thermo"] ?? iconThermo;
+              const raw = ent?.state ?? "---";
+              const value =
+                t.format === "raw"
+                  ? raw
+                  : t.format === "temp"
+                    ? `${Math.round(Number(raw))}°C`
+                    : t.format === "pct"
+                      ? `${Math.round(Number(raw))}%`
+                      : t.format === "onoff"
+                        ? raw === "on"
+                          ? "On"
+                          : raw === "off"
+                            ? "Off"
+                            : raw
+                        : fmtAuto(ent);
+              return tile(label, value, icon);
+            })
+            .join("")
+        : "";
+
     const statsHtml = showStats
       ? `
   <div class="stats ${compactStats ? "stats--compact" : ""}">
@@ -345,6 +484,7 @@ class EcoMax810pDiagramCard extends HTMLElement {
     ${tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "")}
     ${tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "")}
     ${tile("Modes", `${v.summerMode} / ${v.mixerMode}`, iconAlert)}
+    ${extraTilesHtml}
   </div>
 `
       : "";
@@ -353,7 +493,8 @@ class EcoMax810pDiagramCard extends HTMLElement {
 <style>
   :host{display:block}
   .wrap{padding:12px}
-  .svg{transform:translateX(var(--xOffset,0px)) scale(var(--scale,1));transform-origin:top left;width:100%;overflow:hidden}
+  .svg{width:100%;overflow:hidden;display:flex;justify-content:center}
+  .svg svg{transform:translateX(var(--xOffset,0px)) translateY(var(--yOffset,0px)) scale(var(--scale,1));transform-origin:top left}
   .ecomax{width:100%;height:auto;font-family:var(--paper-font-body1_-_font-family,system-ui)}
 
   .device{fill:rgba(240,240,240,.95);stroke:rgba(120,120,120,.35);stroke-width:2}
@@ -363,12 +504,15 @@ class EcoMax810pDiagramCard extends HTMLElement {
   .tank{fill:rgba(245,245,245,.95);stroke:rgba(120,120,120,.35);stroke-width:2}
   .tankFill{fill:url(#tankGradient);opacity:.95}
 
-  .pipeBase{fill:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;opacity:.78}
-  .pipeFlow{fill:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+  .pipeBase{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;opacity:.82}
   .pipe--hot{stroke:rgba(220,40,40,.92)}
   .pipe--cold{stroke:rgba(0,150,220,.92)}
-  .flow--active{opacity:.95;stroke-dasharray:1 14;animation:flow 1.1s linear infinite;filter:url(#glow)}
-  @keyframes flow{to{stroke-dashoffset:-120}}
+
+  .flowDots{opacity:0;filter:url(#glow)}
+  .flowDots.flow--active{opacity:1}
+  .flowDot{opacity:.95}
+  .flowDot--hot{fill:rgba(255,70,70,.95)}
+  .flowDot--cold{fill:rgba(0,170,255,.95)}
 
   .pump .pumpBody{fill:rgba(255,255,255,.85);stroke:rgba(0,0,0,.18);stroke-width:2}
   .pump .pumpIcon{fill:rgba(30,30,30,.78)}
@@ -433,13 +577,295 @@ class EcoMax810pDiagramCard extends HTMLElement {
   @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 <ha-card${headerAttr}>
-  <div class="${wrapClass}" style="--scale:${esc(scaleVal)};--xOffset:${esc(xOffsetVal)};">
+  <div class="${wrapClass}" style="--scale:${esc(scaleVal)};--xOffset:${esc(xOffsetVal)};--yOffset:${esc(yOffsetVal)};">
     <div class="svg">${svg}</div>
     ${statsHtml}
   </div>
 </ha-card>
     `.trim();
   }
+}
+
+class EcoMax810pDiagramCardEditor extends HTMLElement {
+  constructor() {
+    super();
+    this._hass = undefined;
+    this._config = undefined;
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  setConfig(config) {
+    this._config = config;
+    this._render();
+  }
+
+  _fireChanged() {
+    this.dispatchEvent(
+      new CustomEvent("config-changed", {
+        detail: { config: this._config },
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
+
+  _valueChanged(ev) {
+    if (!this._config) return;
+    const target = ev.currentTarget;
+    const key = target?.dataset?.key;
+    if (!key) return;
+    const value = ev?.detail?.value ?? target?.value;
+    this._config = {
+      ...this._config,
+      entities: {
+        ...(this._config.entities ?? {}),
+        [key]: value || undefined
+      }
+    };
+    this._fireChanged();
+  }
+
+  _topValueChanged(ev) {
+    if (!this._config) return;
+    const target = ev.currentTarget;
+    const key = target?.dataset?.key;
+    if (!key) return;
+    const raw = ev?.detail?.value ?? target?.value;
+    const value =
+      raw === "" || raw == null
+        ? undefined
+        : key === "breakpoint" || key === "scale" || key === "diagram_offset_x" || key === "diagram_offset_y"
+          ? Number(raw)
+          : raw;
+    this._config = { ...this._config, [key]: value };
+    this._fireChanged();
+  }
+
+  _addExtraTile() {
+    if (!this._config) return;
+    const tiles = Array.isArray(this._config.extra_tiles) ? [...this._config.extra_tiles] : [];
+    tiles.push({ entity: "", label: "", icon: "thermo", format: "auto" });
+    this._config = { ...this._config, extra_tiles: tiles };
+    this._fireChanged();
+    this._render();
+  }
+
+  _removeExtraTile(idx) {
+    if (!this._config) return;
+    const tiles = Array.isArray(this._config.extra_tiles) ? [...this._config.extra_tiles] : [];
+    tiles.splice(idx, 1);
+    this._config = { ...this._config, extra_tiles: tiles };
+    this._fireChanged();
+    this._render();
+  }
+
+  _extraTileChanged(ev) {
+    if (!this._config) return;
+    const target = ev.currentTarget;
+    const idx = Number(target?.dataset?.idx);
+    const key = target?.dataset?.key;
+    if (!Number.isFinite(idx) || !key) return;
+    const value = ev?.detail?.value ?? target?.value;
+    const tiles = Array.isArray(this._config.extra_tiles) ? [...this._config.extra_tiles] : [];
+    const t = { ...(tiles[idx] ?? { entity: "" }) };
+    t[key] = value;
+    tiles[idx] = t;
+    this._config = { ...this._config, extra_tiles: tiles };
+    this._fireChanged();
+  }
+
+  _render() {
+    if (!this.shadowRoot) this.attachShadow({ mode: "open" });
+    if (!this._config) {
+      this.shadowRoot.innerHTML = `<style>:host{display:block;padding:12px}</style><div>Configure ecoMAX810P card…</div>`;
+      return;
+    }
+
+    const top = this._config;
+    const extraTiles = Array.isArray(top.extra_tiles) ? top.extra_tiles : [];
+    const rows = [
+      ["Operation state", "state"],
+      ["Alert", "alert"],
+      ["Outside temperature", "outside_temperature"],
+      ["Boiler load", "boiler_load"],
+      ["Fuel level", "fuel_level"],
+      ["Fan power", "fan_power"],
+      ["Boiler temperature", "boiler_temperature"],
+      ["Boiler target temperature", "boiler_target_temperature"],
+      ["Mixer temperature", "mixer_temperature"],
+      ["Mixer target temperature", "mixer_target_temperature"],
+      ["DHW temperature", "dhw_temperature"],
+      ["DHW target temperature", "dhw_target_temperature"],
+      ["Flue/exhaust temperature", "exhaust_temperature"],
+      ["Feeder temperature", "feeder_temperature"],
+      ["Oxygen level", "oxygen_level"],
+      ["Summer mode", "summer_mode"],
+      ["Mixer work mode", "mixer_work_mode"],
+      ["Water heater", "water_heater"],
+      ["Heating pump running", "heating_pump_running"],
+      ["DHW pump running", "dhw_pump_running"],
+      ["Mixer pump running", "mixer_pump_running"],
+      ["Circulation pump running", "circulation_pump_running"],
+      ["Fan running", "fan_running"],
+      ["Exhaust fan running", "exhaust_fan_running"],
+      ["Feeder running", "feeder_running"],
+      ["Lighter running", "lighter_running"]
+    ];
+
+    const boolSelect = (key, value) => `
+      <select data-key="${key}">
+        <option value="true" ${value !== false ? "selected" : ""}>true</option>
+        <option value="false" ${value === false ? "selected" : ""}>false</option>
+      </select>
+    `;
+
+    this.shadowRoot.innerHTML = `
+<style>
+  :host{display:block;padding:12px}
+  .section{margin:10px 0 16px}
+  .sectionTitle{font-weight:800;margin:8px 0}
+  .row{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:center;margin:8px 0}
+  .rowLabel{opacity:.85;font-weight:700}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid rgba(0,0,0,.2);cursor:pointer;background:var(--secondary-background-color, #f5f5f5)}
+  .extraTile{border:1px solid rgba(0,0,0,.15);border-radius:12px;padding:10px;margin:10px 0}
+  .extraTileHeader{display:flex;justify-content:space-between;align-items:center;font-weight:800}
+  select,input{width:100%}
+</style>
+
+<div class="section">
+  <div class="sectionTitle">Layout</div>
+  <div class="grid2">
+    <label>Layout
+      <select data-key="layout">
+        <option value="auto" ${top.layout === "auto" ? "selected" : ""}>auto</option>
+        <option value="mobile" ${top.layout === "mobile" ? "selected" : ""}>mobile</option>
+        <option value="desktop" ${top.layout === "desktop" ? "selected" : ""}>desktop</option>
+      </select>
+    </label>
+    <label>Breakpoint (px)
+      <input data-key="breakpoint" type="number" value="${esc(String(top.breakpoint ?? 700))}"/>
+    </label>
+    <label>Scale
+      <input data-key="scale" type="number" step="0.05" value="${esc(String(top.scale ?? 1))}"/>
+    </label>
+    <label>Show left panel
+      ${boolSelect("show_left_panel", top.show_left_panel)}
+    </label>
+    <label>Diagram offset X (px)
+      <input data-key="diagram_offset_x" type="number" value="${esc(String(top.diagram_offset_x ?? 0))}"/>
+    </label>
+    <label>Diagram offset Y (px)
+      <input data-key="diagram_offset_y" type="number" value="${esc(String(top.diagram_offset_y ?? 0))}"/>
+    </label>
+    <label>Show stats
+      ${boolSelect("show_stats", top.show_stats)}
+    </label>
+    <label>Compact stats on mobile
+      ${boolSelect("compact_stats_on_mobile", top.compact_stats_on_mobile)}
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sectionTitle">Entities</div>
+  ${rows
+    .map(([label, key]) => {
+      const value = top.entities?.[key] ?? "";
+      return `
+        <div class="row">
+          <div class="rowLabel">${esc(label)}</div>
+          <ha-entity-picker data-key="${esc(key)}" value="${esc(value)}"></ha-entity-picker>
+        </div>
+      `;
+    })
+    .join("")}
+</div>
+
+<div class="section">
+  <div class="sectionTitle">Extra tiles</div>
+  <div>Use this to add any additional entities without editing code.</div>
+  <button class="btn" id="addTile" type="button">Add extra tile</button>
+  ${extraTiles
+    .map((t, idx) => {
+      return `
+      <div class="extraTile">
+        <div class="extraTileHeader">
+          <div>Tile #${idx + 1}</div>
+          <button class="btn" type="button" data-remove="${idx}">Remove</button>
+        </div>
+        <div class="row">
+          <div class="rowLabel">Entity</div>
+          <ha-entity-picker data-idx="${idx}" data-key="entity" value="${esc(t.entity ?? "")}"></ha-entity-picker>
+        </div>
+        <div class="grid2">
+          <label>Label
+            <input data-idx="${idx}" data-key="label" value="${esc(t.label ?? "")}"/>
+          </label>
+          <label>Icon
+            <select data-idx="${idx}" data-key="icon">
+              ${["thermo", "fire", "fan", "pump", "alert"]
+                .map((k) => `<option value="${k}" ${(t.icon ?? "thermo") === k ? "selected" : ""}>${k}</option>`)
+                .join("")}
+            </select>
+          </label>
+          <label>Format
+            <select data-idx="${idx}" data-key="format">
+              ${["auto", "raw", "temp", "pct", "onoff"]
+                .map((k) => `<option value="${k}" ${(t.format ?? "auto") === k ? "selected" : ""}>${k}</option>`)
+                .join("")}
+            </select>
+          </label>
+        </div>
+      </div>
+      `;
+    })
+    .join("")}
+</div>
+    `.trim();
+
+    const pickers = Array.from(this.shadowRoot.querySelectorAll("ha-entity-picker"));
+    for (const p of pickers) {
+      p.hass = this._hass;
+      p.includeDomains = ["sensor", "binary_sensor", "select", "water_heater", "number", "switch"];
+      p.addEventListener("value-changed", (ev) => {
+        const idx = p.dataset?.idx;
+        if (idx != null) this._extraTileChanged(ev);
+        else this._valueChanged(ev);
+      });
+    }
+
+    const topControls = Array.from(this.shadowRoot.querySelectorAll("input[data-key],select[data-key]"));
+    for (const el of topControls) {
+      el.addEventListener("change", (ev) => {
+        const key = el.dataset?.key;
+        const raw = el.value;
+        if (key === "show_left_panel" || key === "show_stats" || key === "compact_stats_on_mobile") {
+          ev.detail = { value: raw === "true" };
+        } else {
+          ev.detail = { value: raw };
+        }
+        this._topValueChanged(ev);
+      });
+    }
+
+    this.shadowRoot.querySelector("#addTile")?.addEventListener("click", () => this._addExtraTile());
+    for (const b of Array.from(this.shadowRoot.querySelectorAll("button[data-remove]"))) {
+      b.addEventListener("click", () => this._removeExtraTile(Number(b.dataset?.remove)));
+    }
+    for (const el of Array.from(this.shadowRoot.querySelectorAll("[data-idx][data-key]:not(ha-entity-picker)"))) {
+      el.addEventListener("change", (ev) => this._extraTileChanged(ev));
+      el.addEventListener("input", (ev) => this._extraTileChanged(ev));
+    }
+  }
+}
+
+if (!customElements.get("ecomax810p-diagram-card-editor")) {
+  customElements.define("ecomax810p-diagram-card-editor", EcoMax810pDiagramCardEditor);
 }
 
 window.customCards = window.customCards || [];

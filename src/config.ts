@@ -62,6 +62,29 @@ export type EcoMaxDiagramCardConfig = {
 
   /** When `show_stats` is enabled, show compact tiles on narrow layout. Default: true. */
   compact_stats_on_mobile?: boolean;
+
+  /**
+   * Diagram offsets (px). Useful for pixel-perfect alignment across different layouts.
+   * Default: 0/0.
+   */
+  diagram_offset_x?: number;
+  diagram_offset_y?: number;
+
+  /**
+   * Add any extra tiles you want rendered in the stats grid.
+   * Useful for “show everything” without changing code.
+   */
+  extra_tiles?: Array<{
+    entity: string;
+    label?: string;
+    /**
+     * Built-in icon key: `thermo` | `fire` | `fan` | `pump` | `alert`
+     * (falls back to `thermo`).
+     */
+    icon?: "thermo" | "fire" | "fan" | "pump" | "alert";
+    /** Value formatting. `auto` uses unit/device_class when available. */
+    format?: "auto" | "raw" | "temp" | "pct" | "onoff";
+  }>;
 };
 
 export function assertConfig(config: unknown): asserts config is EcoMaxDiagramCardConfig {

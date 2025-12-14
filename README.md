@@ -14,9 +14,14 @@ A custom Lovelace card that visualizes a **Plum ecoMAX 810P-L Touch** boiler + m
 
 If it’s not added automatically, add it manually in **Settings → Dashboards → Resources** as a **module**.
 
+If you don’t see updates after upgrading:
+- Remove any old resource entries (especially ones pointing to `dist/...`)
+- Hard-refresh the browser (or clear site data for your Home Assistant URL)
+- As a last resort, add a cache-buster to the resource URL, e.g. `.../ecomax810p-diagram-card.js?v=1`
+
 ## Usage
 
-Add a manual card:
+Add a manual card (or use the visual editor):
 
 ```yaml
 type: custom:ecomax810p-diagram-card
@@ -27,6 +32,13 @@ layout: auto
 breakpoint: 700
 show_stats: true
 compact_stats_on_mobile: true
+diagram_offset_x: 0
+diagram_offset_y: 0
+extra_tiles:
+  - entity: sensor.ecomax_810p_l_touch_connected_modules
+    label: Modules
+    icon: alert
+    format: raw
 entities:
   state: sensor.ecomax_810p_l_touch_state
   alert: binary_sensor.ecomax_810p_l_touch_alert
@@ -73,6 +85,8 @@ entities:
 - `breakpoint` (optional, default `700`): width in px used for `layout: auto`
 - `show_stats` (optional, default `true`): show a responsive stats tile grid with lots of extra values
 - `compact_stats_on_mobile` (optional, default `true`): reduce spacing on mobile layout
+- `diagram_offset_x` / `diagram_offset_y` (optional, default `0`): nudge the diagram in px (helps fix “diagram is offset”)
+- `extra_tiles` (optional): list of additional tiles. Each item supports `entity`, optional `label`, optional `icon` (`thermo|fire|fan|pump|alert`), and optional `format` (`auto|raw|temp|pct|onoff`).
 - `entities` (required): mapping of your ecoMAX entities (see example above)
 
 ## Development

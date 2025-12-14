@@ -115,8 +115,24 @@ export function renderDiagramSvg(v: DiagramValues): string {
   const dhwActive = v.dhwPump;
   const mixerActive = v.mixerPump;
 
-  // Pipe classes toggle animated moving-dot flow when active.
-  // Note: we keep it pure SVG+CSS (no external assets) for easy HACS install.
+  // True moving-dot flow (like ecoMAX) using SVG animateMotion.
+  const dots = (pathId: string, color: "hot" | "cold", active: boolean, count = 8, dur = 1.4) => {
+    const beginStep = dur / count;
+    const circles = Array.from({ length: count }).map((_, i) => {
+      const begin = -(i * beginStep);
+      return `
+      <circle class="flowDot flowDot--${color}" r="3.6">
+        <animateMotion dur="${dur}s" repeatCount="indefinite" begin="${begin}s">
+          <mpath href="#${pathId}"/>
+        </animateMotion>
+      </circle>`;
+    });
+    return `
+    <g class="flowDots ${active ? "flow--active" : ""}">
+      ${circles.join("")}
+    </g>`;
+  };
+
   return `
 <svg class="ecomax" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ecoMAX boiler diagram">
   <defs>
@@ -167,23 +183,28 @@ export function renderDiagramSvg(v: DiagramValues): string {
     <rect class="tankFill" x="-80" y="-135" width="160" height="270" rx="65"></rect>
   </g>
 
-  <!-- Main heating loop pipes -->
-  <path class="pipeBase pipe--hot" d="M420 390 H720 V250" />
-  <path class="pipeFlow pipe--hot ${heatingActive ? "flow--active" : ""}" d="M420 390 H720 V250" />
-  <path class="pipeBase pipe--cold" d="M420 500 H720 V610 H1030" />
-  <path class="pipeFlow pipe--cold ${heatingActive ? "flow--active" : ""}" d="M420 500 H720 V610 H1030" />
+  <!-- Pipe geometry (base) -->
+  <path id="p_hot_main" class="pipeBase pipe--hot" d="M420 390 H720 V250" />
+  <path id="p_cold_main" class="pipeBase pipe--cold" d="M420 500 H720 V610 H1030" />
+  <path id="p_hot_mixer" class="pipeBase pipe--hot" d="M720 250 V180 H820" />
+  <path id="p_cold_mixer" class="pipeBase pipe--cold" d="M820 180 V250" />
+  <path id="p_hot_dhw" class="pipeBase pipe--hot" d="M720 420 H895" />
+  <path id="p_cold_dhw" class="pipeBase pipe--cold" d="M1030 610 H895 V540" />
 
-  <!-- Mixer branch -->
-  <path class="pipeBase pipe--hot" d="M720 250 V180 H820" />
-  <path class="pipeFlow pipe--hot ${mixerActive ? "flow--active" : ""}" d="M720 250 V180 H820" />
-  <path class="pipeBase pipe--cold" d="M820 180 V250" />
-  <path class="pipeFlow pipe--cold ${mixerActive ? "flow--active" : ""}" d="M820 180 V250" />
+  <!-- Dot paths (direction) -->
+  <path id="d_hot_main" d="M420 390 H720 V250" fill="none" />
+  <path id="d_cold_main" d="M1030 610 H720 V500 H420" fill="none" />
+  <path id="d_hot_mixer" d="M720 250 V180 H820" fill="none" />
+  <path id="d_cold_mixer" d="M820 250 V180" fill="none" />
+  <path id="d_hot_dhw" d="M720 420 H895" fill="none" />
+  <path id="d_cold_dhw" d="M895 540 V610 H1030" fill="none" />
 
-  <!-- DHW branch to tank -->
-  <path class="pipeBase pipe--hot" d="M720 420 H895" />
-  <path class="pipeFlow pipe--hot ${dhwActive ? "flow--active" : ""}" d="M720 420 H895" />
-  <path class="pipeBase pipe--cold" d="M1030 610 H895 V540" />
-  <path class="pipeFlow pipe--cold ${dhwActive ? "flow--active" : ""}" d="M1030 610 H895 V540" />
+  ${dots("d_hot_main", "hot", heatingActive, 9, 1.35)}
+  ${dots("d_cold_main", "cold", heatingActive, 9, 1.35)}
+  ${dots("d_hot_mixer", "hot", mixerActive, 7, 1.2)}
+  ${dots("d_cold_mixer", "cold", mixerActive, 7, 1.2)}
+  ${dots("d_hot_dhw", "hot", dhwActive, 7, 1.2)}
+  ${dots("d_cold_dhw", "cold", dhwActive, 7, 1.2)}
 
   <!-- Pumps (pulse when active) -->
   <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(720 330)">
