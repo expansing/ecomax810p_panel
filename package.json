@@ -1,0 +1,22 @@
+{
+  "name": "ecomax810p-diagram-card",
+  "version": "0.1.0",
+  "description": "Home Assistant Lovelace card for Plum ecoMAX810P boiler + mixer diagram with animations",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "dependencies": {
+    "lit": "^3.3.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.34.9",
+    "typescript": "^5.7.2"
+  }
+}
+
+

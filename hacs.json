@@ -1,0 +1,9 @@
+{
+  "name": "ecoMAX810P Diagram Card",
+  "filename": "ecomax810p-diagram-card.js",
+  "content_in_root": true,
+  "render_readme": true,
+  "homeassistant": "2023.12.0"
+}
+
+
