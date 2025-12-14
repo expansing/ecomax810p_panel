@@ -285,11 +285,12 @@ const renderDiagramSvg = (v) => {
 `.trim();
 };
 
-// New schematic (closer to the ecoMAX screen diagram)
+// Professional redesign matching the ecoMAX reference image exactly
 const renderDiagramSvgV2 = (v, backgroundUrl) => {
   const heatingActive = v.heatingPump;
   const dhwActive = v.dhwPump;
   const mixerActive = v.mixerPump;
+  const mixerClosed = !mixerActive;
 
   const dots = (pathId, color, active, count = 10, dur = 1.25, r = 3.4) => {
     const beginStep = dur / count;
@@ -316,10 +317,6 @@ const renderDiagramSvgV2 = (v, backgroundUrl) => {
       <stop offset="55%" stop-color="rgba(80,160,255,0.55)"/>
       <stop offset="100%" stop-color="rgba(0,170,255,0.90)"/>
     </linearGradient>
-    <linearGradient id="panelGlow" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
-      <stop offset="100%" stop-color="rgba(0,0,0,0.0)"/>
-    </linearGradient>
     <filter id="glow">
       <feGaussianBlur stdDeviation="2.4" result="coloredBlur" />
       <feMerge>
@@ -330,115 +327,113 @@ const renderDiagramSvgV2 = (v, backgroundUrl) => {
   </defs>
 
   ${backgroundUrl ? `<image href="${backgroundUrl}" x="0" y="0" width="1000" height="600" preserveAspectRatio="xMidYMid meet"></image>` : ""}
-  ${backgroundUrl ? "" : `<rect x="30" y="70" width="940" height="470" rx="22" fill="url(#panelGlow)" opacity="0.9"></rect>`}
+  ${backgroundUrl ? "" : `<rect x="0" y="0" width="1000" height="600" fill="rgba(60,60,70,0.95)"></rect>`}
 
-  <g class="pill pill--blue" transform="translate(500 95)">
-    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
+  <g class="pill pill--blue" transform="translate(500 50)">
+    <rect x="-50" y="-18" rx="18" ry="18" width="100" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.outside}</text>
   </g>
 
-  <g class="boiler" transform="translate(165 310)">
-    <rect class="boilerBody" x="-70" y="-125" width="140" height="250" rx="10"></rect>
-    <rect class="boilerDoor" x="-55" y="10" width="110" height="95" rx="8"></rect>
-    <rect class="boilerScreen" x="-10" y="-105" width="46" height="28" rx="4"></rect>
-    <circle class="boilerLed" cx="-36" cy="-92" r="7"></circle>
-    <circle class="boilerKnob" cx="-36" cy="-66" r="6"></circle>
+  <g class="boiler" transform="translate(180 350)">
+    <rect class="boilerBody" x="-75" y="-140" width="150" height="280" rx="12" fill="rgba(240,240,240,0.95)" stroke="rgba(180,180,180,0.4)" stroke-width="2"></rect>
+    <rect class="boilerDoor" x="-60" y="20" width="120" height="100" rx="8" fill="rgba(220,220,220,0.95)" stroke="rgba(160,160,160,0.3)" stroke-width="1.5"></rect>
+    <rect class="boilerScreen" x="-15" y="-120" width="50" height="32" rx="4" fill="rgba(30,30,30,0.95)"></rect>
+    <circle class="boilerLed" cx="-40" cy="-104" r="8" fill="rgba(255,60,60,0.95)"></circle>
   </g>
 
-  <g class="tankWrap" transform="translate(820 320)">
-    <rect class="tank" x="-78" y="-150" width="156" height="300" rx="70"></rect>
-    <rect class="tankFill" x="-72" y="-144" width="144" height="288" rx="66"></rect>
-    <path class="coil" d="M-30 -80 h60 a18 18 0 0 1 0 36 h-60 a18 18 0 0 0 0 36 h60 a18 18 0 0 1 0 36 h-60 a18 18 0 0 0 0 36 h60" />
-  </g>
-
-  <g class="floor" transform="translate(790 160)">
-    <rect class="floorPlate" x="-70" y="-46" width="140" height="92" rx="18"></rect>
-    <path class="floorCoil" d="M-45 -20 h90 a14 14 0 0 1 0 28 h-90 a14 14 0 0 0 0 28 h90" />
-  </g>
-
-  <path class="pipeBase pipe--hot" d="M235 260 H520" />
-  <path class="pipeBase pipe--cold" d="M520 430 H235" />
-
-  <path class="pipeBase pipe--hot" d="M520 260 V175 H720" />
-  <path class="pipeBase pipe--cold" d="M720 175 V260" />
-
-  <path class="pipeBase pipe--hot" d="M520 310 H742" />
-  <path class="pipeBase pipe--cold" d="M898 430 H742 V360" />
-
-  <path class="pipeBase pipe--hot" d="M742 310 H770" />
-  <path class="pipeBase pipe--cold" d="M770 430 H742" />
-
-  <g class="mixer" transform="translate(520 310)">
-    <rect class="mixerBox" x="-16" y="-16" width="32" height="32" rx="6"></rect>
-    <path class="mixerX" d="M-10 -10 L10 10 M10 -10 L-10 10" />
-  </g>
-
-  <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(390 260)">
-    <circle class="pumpBody" r="15"></circle>
-    <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
-  </g>
-  <g class="pump ${mixerActive ? "pump--active" : ""}" transform="translate(720 215)">
-    <circle class="pumpBody" r="15"></circle>
-    <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
-  </g>
-  <g class="pump ${dhwActive ? "pump--active" : ""}" transform="translate(742 310)">
-    <circle class="pumpBody" r="15"></circle>
-    <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
-  </g>
-
-  <path id="d_hot_boiler_to_mixer" d="M235 260 H520" fill="none" />
-  <path id="d_cold_mixer_to_boiler" d="M520 430 H235" fill="none" />
-  <path id="d_hot_mixer_to_floor" d="M520 260 V175 H720" fill="none" />
-  <path id="d_cold_floor_to_mixer" d="M720 260 V175" fill="none" />
-  <path id="d_hot_mixer_to_tank" d="M520 310 H770" fill="none" />
-  <path id="d_cold_tank_to_mixer" d="M770 430 H742 V360 H520" fill="none" />
-
-  ${dots("d_hot_boiler_to_mixer", "hot", heatingActive, 10, 1.05)}
-  ${dots("d_cold_mixer_to_boiler", "cold", heatingActive, 10, 1.05)}
-  ${dots("d_hot_mixer_to_floor", "hot", mixerActive, 9, 1.15)}
-  ${dots("d_cold_floor_to_mixer", "cold", mixerActive, 9, 1.15)}
-  ${dots("d_hot_mixer_to_tank", "hot", dhwActive, 9, 1.15)}
-  ${dots("d_cold_tank_to_mixer", "cold", dhwActive, 9, 1.15)}
-
-  <g class="pill pill--purple" transform="translate(270 235)">
-    <rect x="-54" y="-18" rx="18" ry="18" width="108" height="36"></rect>
+  <g class="pill pill--purple" transform="translate(300 280)">
+    <rect x="-50" y="-18" rx="18" ry="18" width="100" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.boilerNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(270 275)">
-    <rect x="-54" y="-16" rx="16" ry="16" width="108" height="32"></rect>
+  <g class="pill pill--purple pill--sub" transform="translate(300 320)">
+    <rect x="-50" y="-16" rx="16" ry="16" width="100" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.boilerTarget}</text>
   </g>
 
-  <g class="pill pill--purple" transform="translate(560 205)">
-    <rect x="-46" y="-18" rx="18" ry="18" width="92" height="36"></rect>
+  <g class="pill pill--purple pill--tiny" transform="translate(300 420)">
+    <rect x="-65" y="-16" rx="16" ry="16" width="130" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">Flue ${v.exhaustTemp}</text>
+  </g>
+  <g class="pill pill--purple pill--tiny" transform="translate(300 460)">
+    <rect x="-65" y="-16" rx="16" ry="16" width="130" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">Feeder ${v.feederTemp}</text>
+  </g>
+  <g class="pill pill--purple pill--tiny" transform="translate(300 500)">
+    <rect x="-65" y="-16" rx="16" ry="16" width="130" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">O₂ ${v.o2}</text>
+  </g>
+
+  <path class="pipeBase pipe--hot" d="M255 280 H580" stroke-dasharray="6 4" fill="none" />
+  
+  <g class="mixer" transform="translate(580 350)">
+    <path class="mixerTriangle" d="M-12 -20 L12 0 L-12 20 Z" fill="rgba(255,255,255,0.95)" stroke="rgba(200,200,200,0.5)" stroke-width="1.5"></path>
+    ${mixerClosed ? `<path class="mixerX" d="M-8 -8 L8 8 M8 -8 L-8 8" stroke="rgba(220,40,40,0.95)" stroke-width="3" stroke-linecap="round"></path>` : ""}
+  </g>
+
+  <path class="pipeBase pipe--hot" d="M580 280 V180 H780" stroke-dasharray="6 4" fill="none" />
+  <path class="pipeBase pipe--cold" d="M780 180 V280" stroke-dasharray="6 4" fill="none" />
+  
+  <g class="floor" transform="translate(780 230)">
+    <rect class="floorPlate" x="-60" y="-40" width="120" height="80" rx="16" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" stroke-width="1"></rect>
+    <path class="floorCoil" d="M-40 -15 h80 a12 12 0 0 1 0 24 h-80 a12 12 0 0 0 0 24 h80" fill="none" stroke="rgba(220,40,40,0.85)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+  </g>
+  
+  <g class="pill pill--purple" transform="translate(780 150)">
+    <rect x="-45" y="-18" rx="18" ry="18" width="90" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.mixerNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(560 245)">
-    <rect x="-46" y="-16" rx="16" ry="16" width="92" height="32"></rect>
+  <g class="pill pill--purple pill--sub" transform="translate(780 190)">
+    <rect x="-45" y="-16" rx="16" ry="16" width="90" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.mixerTarget}</text>
   </g>
 
-  <g class="pill pill--purple" transform="translate(820 260)">
-    <rect x="-46" y="-18" rx="18" ry="18" width="92" height="36"></rect>
+  <path class="pipeBase pipe--hot" d="M580 380 H800" stroke-dasharray="6 4" fill="none" />
+  <path class="pipeBase pipe--cold" d="M920 480 H800 V420 H580" stroke-dasharray="6 4" fill="none" />
+
+  <g class="tankWrap" transform="translate(860 400)">
+    <rect class="tank" x="-80" y="-160" width="160" height="320" rx="75" fill="rgba(245,245,245,0.95)" stroke="rgba(180,180,180,0.4)" stroke-width="2"></rect>
+    <rect class="tankFill" x="-74" y="-154" width="148" height="308" rx="71" fill="url(#tankGradient)"></rect>
+    <path class="coil coil--hot" d="M-40 -100 h80 a20 20 0 0 1 0 40 h-80" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="12" stroke-linecap="round" opacity="0.6"></path>
+    <path class="coil coil--cold" d="M-40 60 h80 a20 20 0 0 0 0 40 h-80" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="12" stroke-linecap="round" opacity="0.6"></path>
+  </g>
+
+  <g class="pill pill--purple" transform="translate(860 280)">
+    <rect x="-45" y="-18" rx="18" ry="18" width="90" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.dhwNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(820 300)">
-    <rect x="-46" y="-16" rx="16" ry="16" width="92" height="32"></rect>
+  <g class="pill pill--purple pill--sub" transform="translate(860 320)">
+    <rect x="-45" y="-16" rx="16" ry="16" width="90" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.dhwTarget}</text>
   </g>
 
-  <g class="pill pill--purple pill--tiny" transform="translate(320 355)">
-    <rect x="-62" y="-16" rx="16" ry="16" width="124" height="32"></rect>
-    <text text-anchor="middle" dominant-baseline="central">Flue ${v.exhaustTemp}</text>
+  <path class="pipeBase pipe--cold" d="M580 480 H255" stroke-dasharray="6 4" fill="none" />
+
+  <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(420 280)">
+    <circle class="pumpBody" r="18" fill="rgba(255,255,255,0.9)" stroke="rgba(0,0,0,0.2)" stroke-width="2"></circle>
+    <path class="pumpIcon" d="M-7 0 L9 -9 L9 9 Z" fill="rgba(30,30,30,0.8)"></path>
   </g>
-  <g class="pill pill--purple pill--tiny" transform="translate(320 400)">
-    <rect x="-62" y="-16" rx="16" ry="16" width="124" height="32"></rect>
-    <text text-anchor="middle" dominant-baseline="central">Feeder ${v.feederTemp}</text>
+  <g class="pump ${mixerActive ? "pump--active" : ""}" transform="translate(780 230)">
+    <circle class="pumpBody" r="18" fill="rgba(255,255,255,0.9)" stroke="rgba(0,0,0,0.2)" stroke-width="2"></circle>
+    <path class="pumpIcon" d="M-7 0 L9 -9 L9 9 Z" fill="rgba(30,30,30,0.8)"></path>
   </g>
-  <g class="pill pill--purple pill--tiny" transform="translate(320 445)">
-    <rect x="-62" y="-16" rx="16" ry="16" width="124" height="32"></rect>
-    <text text-anchor="middle" dominant-baseline="central">O₂ ${v.o2}</text>
+  <g class="pump ${dhwActive ? "pump--active" : ""}" transform="translate(800 380)">
+    <circle class="pumpBody" r="18" fill="rgba(255,255,255,0.9)" stroke="rgba(0,0,0,0.2)" stroke-width="2"></circle>
+    <path class="pumpIcon" d="M-7 0 L9 -9 L9 9 Z" fill="rgba(30,30,30,0.8)"></path>
   </g>
+
+  <path id="d_hot_boiler_to_mixer" d="M255 280 H580" fill="none" />
+  <path id="d_cold_mixer_to_boiler" d="M580 480 H255" fill="none" />
+  <path id="d_hot_mixer_to_floor" d="M580 280 V180 H780" fill="none" />
+  <path id="d_cold_floor_to_mixer" d="M780 280 V180" fill="none" />
+  <path id="d_hot_mixer_to_tank" d="M580 380 H920" fill="none" />
+  <path id="d_cold_tank_to_mixer" d="M920 480 H800 V420 H580" fill="none" />
+
+  ${dots("d_hot_boiler_to_mixer", "hot", heatingActive, 12, 1.2)}
+  ${dots("d_cold_mixer_to_boiler", "cold", heatingActive, 12, 1.2)}
+  ${dots("d_hot_mixer_to_floor", "hot", mixerActive, 10, 1.3)}
+  ${dots("d_cold_floor_to_mixer", "cold", mixerActive, 10, 1.3)}
+  ${dots("d_hot_mixer_to_tank", "hot", dhwActive, 10, 1.3)}
+  ${dots("d_cold_tank_to_mixer", "cold", dhwActive, 10, 1.3)}
 </svg>
 `.trim();
 };
@@ -674,12 +669,12 @@ class EcoMax810pDiagramCard extends HTMLElement {
   .floorPlate{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.10);stroke-width:1}
   .floorCoil{fill:none;stroke:rgba(220,40,40,.85);stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
 
-  .mixerBox{fill:rgba(255,255,255,.10);stroke:rgba(255,255,255,.20);stroke-width:1}
-  .mixerX{stroke:rgba(255,255,255,.80);stroke-width:2;stroke-linecap:round}
+  .mixerTriangle{filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+  .mixerX{stroke-linecap:round}
 
-  .pipeBase{fill:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-  .pipe--hot{stroke:rgba(220,40,40,.92)}
-  .pipe--cold{stroke:rgba(0,150,220,.92)}
+  .pipeBase{fill:none;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+  .pipe--hot{stroke:rgba(220,40,40,.95)}
+  .pipe--cold{stroke:rgba(0,150,220,.95)}
 
   .flowDots{opacity:0;filter:url(#glow)}
   .flowDots.flow--active{opacity:1}

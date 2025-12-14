@@ -258,12 +258,12 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .floorPlate{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.10);stroke-width:1}
   .floorCoil{fill:none;stroke:rgba(220,40,40,.85);stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
 
-  .mixerBox{fill:rgba(255,255,255,.10);stroke:rgba(255,255,255,.20);stroke-width:1}
-  .mixerX{stroke:rgba(255,255,255,.80);stroke-width:2;stroke-linecap:round}
+  .mixerTriangle{filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+  .mixerX{stroke-linecap:round}
 
-  .pipeBase{fill:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-  .pipe--hot{stroke:rgba(220,40,40,.92)}
-  .pipe--cold{stroke:rgba(0,150,220,.92)}
+  .pipeBase{fill:none;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+  .pipe--hot{stroke:rgba(220,40,40,.95)}
+  .pipe--cold{stroke:rgba(0,150,220,.95)}
 
   .flowDots{opacity:0;filter:url(#glow)}
   .flowDots.flow--active{opacity:1}
