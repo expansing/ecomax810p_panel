@@ -285,7 +285,7 @@ const renderDiagramSvg = (v) => {
 };
 
 // New schematic (closer to the ecoMAX screen diagram)
-const renderDiagramSvgV2 = (v) => {
+const renderDiagramSvgV2 = (v, backgroundUrl) => {
   const heatingActive = v.heatingPump;
   const dhwActive = v.dhwPump;
   const mixerActive = v.mixerPump;
@@ -328,7 +328,8 @@ const renderDiagramSvgV2 = (v) => {
     </filter>
   </defs>
 
-  <rect x="30" y="70" width="940" height="470" rx="22" fill="url(#panelGlow)" opacity="0.9"></rect>
+  ${backgroundUrl ? `<image href="${backgroundUrl}" x="0" y="0" width="1000" height="600" preserveAspectRatio="xMidYMid meet"></image>` : ""}
+  ${backgroundUrl ? "" : `<rect x="30" y="70" width="940" height="470" rx="22" fill="url(#panelGlow)" opacity="0.9"></rect>`}
 
   <g class="pill pill--blue" transform="translate(500 95)">
     <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
@@ -481,6 +482,7 @@ class EcoMax810pDiagramCard extends HTMLElement {
       compact_stats_on_mobile: true,
       diagram_offset_x: 0,
       diagram_offset_y: 0,
+      background_url: undefined,
       ...config
     };
     this._render();
@@ -543,14 +545,15 @@ class EcoMax810pDiagramCard extends HTMLElement {
       compact_stats_on_mobile,
       diagram_offset_x,
       diagram_offset_y,
-      extra_tiles
+      extra_tiles,
+      background_url
     } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
 
     const v = computeValues(this._hass, entities);
-    const svg = renderDiagramSvgV2(v);
+    const svg = renderDiagramSvgV2(v, background_url);
     const headerAttr = title ? ` header="${esc(title)}"` : "";
     const wrapClass = show_left_panel ? "wrap" : "wrap noLeft";
     const scaleVal = Number.isFinite(scale) ? String(scale) : "1";
@@ -909,6 +912,9 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
 <div class="section">
   <div class="sectionTitle">Layout</div>
   <div class="grid2">
+    <label>Background URL
+      <input data-key="background_url" placeholder="/local/ecomax/diagram.png" value="${esc(String(top.background_url ?? ""))}"/>
+    </label>
     <label>Layout
       <select data-key="layout">
         <option value="auto" ${top.layout === "auto" ? "selected" : ""}>auto</option>

@@ -110,7 +110,12 @@ export function computeValues(hass: HomeAssistant, entities: EntityMap): Diagram
  * Returns an SVG diagram inspired by the ecoMAX screen.
  * Layout is responsive via viewBox.
  */
-export function renderDiagramSvg(v: DiagramValues): string {
+export function renderDiagramSvg(
+  v: DiagramValues,
+  opts?: {
+    backgroundUrl?: string;
+  }
+): string {
   const heatingActive = v.heatingPump;
   const dhwActive = v.dhwPump;
   const mixerActive = v.mixerPump;
@@ -132,6 +137,10 @@ export function renderDiagramSvg(v: DiagramValues): string {
       ${circles.join("")}
     </g>`;
   };
+
+  // Optional: render a user-provided background and overlay our animated elements on top.
+  // This is the closest way to match the original ecoMAX diagram artwork.
+  const backgroundUrl = opts?.backgroundUrl;
 
   // Designer redraw: closer to ecoMAX schematic (boiler + mixer + floor coil + DHW tank).
   return `
@@ -155,8 +164,9 @@ export function renderDiagramSvg(v: DiagramValues): string {
     </filter>
   </defs>
 
-  <!-- Subtle diagram panel (helps readability on dark dashboards) -->
-  <rect x="30" y="70" width="940" height="470" rx="22" fill="url(#panelGlow)" opacity="0.9"></rect>
+  ${backgroundUrl ? `<image href="${backgroundUrl}" x="0" y="0" width="1000" height="600" preserveAspectRatio="xMidYMid meet"></image>` : ""}
+
+  ${backgroundUrl ? "" : `<rect x="30" y="70" width="940" height="470" rx="22" fill="url(#panelGlow)" opacity="0.9"></rect>`}
 
   <!-- Outdoor temp pill (top center) -->
   <g class="pill pill--blue" transform="translate(500 95)">

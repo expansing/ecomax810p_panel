@@ -34,6 +34,7 @@ show_stats: true
 compact_stats_on_mobile: true
 diagram_offset_x: 0
 diagram_offset_y: 0
+background_url: /local/ecomax/diagram.png
 extra_tiles:
   - entity: sensor.ecomax_810p_l_touch_connected_modules
     label: Modules
@@ -86,6 +87,7 @@ entities:
 - `show_stats` (optional, default `true`): show a responsive stats tile grid with lots of extra values
 - `compact_stats_on_mobile` (optional, default `true`): reduce spacing on mobile layout
 - `diagram_offset_x` / `diagram_offset_y` (optional, default `0`): nudge the diagram in px (helps fix “diagram is offset”)
+- `background_url` (optional): render your own ecoMAX diagram image as a background (best way to match the original look). Put the file in HA `/config/www/...` and reference it as `/local/...`.
 - `extra_tiles` (optional): list of additional tiles. Each item supports `entity`, optional `label`, optional `icon` (`thermo|fire|fan|pump|alert`), and optional `format` (`auto|raw|temp|pct|onoff`).
 - `entities` (required): mapping of your ecoMAX entities (see example above)
 

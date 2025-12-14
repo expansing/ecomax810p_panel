@@ -143,13 +143,14 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       compact_stats_on_mobile,
       diagram_offset_x,
       diagram_offset_y,
-      extra_tiles
+      extra_tiles,
+      background_url
     } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
     const v = computeValues(this._hass, entities);
-    const svg = renderDiagramSvg(v);
+    const svg = renderDiagramSvg(v, { backgroundUrl: background_url });
 
     const headerAttr = title ? ` header="${esc(title)}"` : "";
     const wrapClass = show_left_panel ? "wrap" : "wrap noLeft";
@@ -520,6 +521,9 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
 <div class="section">
   <div class="sectionTitle">Layout</div>
   <div class="grid2">
+    <label>Background URL
+      <input data-key="background_url" placeholder="/local/ecomax/diagram.png" value="${esc(String((top as any).background_url ?? ""))}"/>
+    </label>
     <label>Layout
       <select data-key="layout">
         <option value="auto" ${top.layout === "auto" ? "selected" : ""}>auto</option>

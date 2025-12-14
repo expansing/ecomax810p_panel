@@ -85,6 +85,15 @@ export type EcoMaxDiagramCardConfig = {
     /** Value formatting. `auto` uses unit/device_class when available. */
     format?: "auto" | "raw" | "temp" | "pct" | "onoff";
   }>;
+
+  /**
+   * Optional diagram background image/SVG (served by HA), e.g.:
+   * - `/local/ecomax/diagram.png`
+   * - `/local/ecomax/diagram.svg`
+   *
+   * When set, the card renders this as the base layer and overlays animations + pills.
+   */
+  background_url?: string;
 };
 
 export function assertConfig(config: unknown): asserts config is EcoMaxDiagramCardConfig {
