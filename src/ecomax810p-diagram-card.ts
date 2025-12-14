@@ -246,8 +246,21 @@ export class EcoMax810pDiagramCard extends HTMLElement {
 
   .tank{fill:rgba(245,245,245,.95);stroke:rgba(120,120,120,.35);stroke-width:2}
   .tankFill{fill:url(#tankGradient);opacity:.95}
+  .coil{fill:none;stroke:rgba(255,255,255,.70);stroke-width:10;stroke-linecap:round;opacity:.55}
 
-  .pipeBase{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;opacity:.82}
+  .boilerBody{fill:rgba(245,245,245,.92);stroke:rgba(255,255,255,.35);stroke-width:2}
+  .boilerDoor{fill:rgba(230,230,230,.92);stroke:rgba(0,0,0,.15);stroke-width:1}
+  .boilerScreen{fill:rgba(24,24,24,.92)}
+  .boilerLed{fill:rgba(255,80,80,.92)}
+  .boilerKnob{fill:rgba(140,140,140,.85)}
+
+  .floorPlate{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.10);stroke-width:1}
+  .floorCoil{fill:none;stroke:rgba(220,40,40,.85);stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+
+  .mixerBox{fill:rgba(255,255,255,.10);stroke:rgba(255,255,255,.20);stroke-width:1}
+  .mixerX{stroke:rgba(255,255,255,.80);stroke-width:2;stroke-linecap:round}
+
+  .pipeBase{fill:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
   .pipe--hot{stroke:rgba(220,40,40,.92)}
   .pipe--cold{stroke:rgba(0,150,220,.92)}
 

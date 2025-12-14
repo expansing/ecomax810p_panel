@@ -115,13 +115,13 @@ export function renderDiagramSvg(v: DiagramValues): string {
   const dhwActive = v.dhwPump;
   const mixerActive = v.mixerPump;
 
-  // True moving-dot flow (like ecoMAX) using SVG animateMotion.
-  const dots = (pathId: string, color: "hot" | "cold", active: boolean, count = 8, dur = 1.4) => {
+  // True moving-dot flow using SVG animateMotion.
+  const dots = (pathId: string, color: "hot" | "cold", active: boolean, count = 10, dur = 1.25, r = 3.4) => {
     const beginStep = dur / count;
     const circles = Array.from({ length: count }).map((_, i) => {
       const begin = -(i * beginStep);
       return `
-      <circle class="flowDot flowDot--${color}" r="3.6">
+      <circle class="flowDot flowDot--${color}" r="${r}">
         <animateMotion dur="${dur}s" repeatCount="indefinite" begin="${begin}s">
           <mpath href="#${pathId}"/>
         </animateMotion>
@@ -133,16 +133,21 @@ export function renderDiagramSvg(v: DiagramValues): string {
     </g>`;
   };
 
+  // Designer redraw: closer to ecoMAX schematic (boiler + mixer + floor coil + DHW tank).
   return `
-<svg class="ecomax" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ecoMAX boiler diagram">
+<svg class="ecomax" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ecoMAX boiler diagram">
   <defs>
     <linearGradient id="tankGradient" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0%" stop-color="rgba(255,80,80,0.85)"/>
+      <stop offset="0%" stop-color="rgba(255,80,80,0.90)"/>
       <stop offset="55%" stop-color="rgba(80,160,255,0.55)"/>
-      <stop offset="100%" stop-color="rgba(0,170,255,0.85)"/>
+      <stop offset="100%" stop-color="rgba(0,170,255,0.90)"/>
+    </linearGradient>
+    <linearGradient id="panelGlow" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.0)"/>
     </linearGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="2.8" result="coloredBlur" />
+      <feGaussianBlur stdDeviation="2.4" result="coloredBlur" />
       <feMerge>
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -150,136 +155,131 @@ export function renderDiagramSvg(v: DiagramValues): string {
     </filter>
   </defs>
 
-  <!-- Outdoor temp pill -->
-  <g class="pill pill--blue" transform="translate(610 55)">
-    <rect x="-85" y="-18" rx="18" ry="18" width="170" height="36"></rect>
+  <!-- Subtle diagram panel (helps readability on dark dashboards) -->
+  <rect x="30" y="70" width="940" height="470" rx="22" fill="url(#panelGlow)" opacity="0.9"></rect>
+
+  <!-- Outdoor temp pill (top center) -->
+  <g class="pill pill--blue" transform="translate(500 95)">
+    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.outside}</text>
   </g>
 
-  <!-- Boiler block -->
-  <g transform="translate(350 410)">
-    <rect class="device" x="-70" y="-110" width="140" height="220" rx="8"></rect>
-    <rect class="deviceScreen" x="-18" y="-92" width="46" height="26" rx="3"></rect>
-    <circle class="deviceIcon" cx="-40" cy="-80" r="10"></circle>
+  <!-- Boiler (left) -->
+  <g class="boiler" transform="translate(165 310)">
+    <rect class="boilerBody" x="-70" y="-125" width="140" height="250" rx="10"></rect>
+    <rect class="boilerDoor" x="-55" y="10" width="110" height="95" rx="8"></rect>
+    <rect class="boilerScreen" x="-10" y="-105" width="46" height="28" rx="4"></rect>
+    <circle class="boilerLed" cx="-36" cy="-92" r="7"></circle>
+    <circle class="boilerKnob" cx="-36" cy="-66" r="6"></circle>
   </g>
 
-  <!-- Local sensor pills near boiler -->
-  <g class="pill pill--purple pill--tiny" transform="translate(510 460)">
-    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
-    <text text-anchor="middle" dominant-baseline="central">Flue ${v.exhaustTemp}</text>
-  </g>
-  <g class="pill pill--purple pill--tiny" transform="translate(510 505)">
-    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
-    <text text-anchor="middle" dominant-baseline="central">Feeder ${v.feederTemp}</text>
-  </g>
-  <g class="pill pill--purple pill--tiny" transform="translate(510 550)">
-    <rect x="-70" y="-16" rx="16" ry="16" width="140" height="32"></rect>
-    <text text-anchor="middle" dominant-baseline="central">O₂ ${v.o2}</text>
+  <!-- DHW tank (right) -->
+  <g class="tankWrap" transform="translate(820 320)">
+    <rect class="tank" x="-78" y="-150" width="156" height="300" rx="70"></rect>
+    <rect class="tankFill" x="-72" y="-144" width="144" height="288" rx="66"></rect>
+    <!-- Coil -->
+    <path class="coil" d="M-30 -80 h60 a18 18 0 0 1 0 36 h-60 a18 18 0 0 0 0 36 h60 a18 18 0 0 1 0 36 h-60 a18 18 0 0 0 0 36 h60" />
   </g>
 
-  <!-- Tank block -->
-  <g transform="translate(980 430)">
-    <rect class="tank" x="-85" y="-140" width="170" height="280" rx="70"></rect>
-    <rect class="tankFill" x="-80" y="-135" width="160" height="270" rx="65"></rect>
+  <!-- Floor heating coil (top-right, like ecoMAX heated floor icon) -->
+  <g class="floor" transform="translate(790 160)">
+    <rect class="floorPlate" x="-70" y="-46" width="140" height="92" rx="18"></rect>
+    <path class="floorCoil" d="M-45 -20 h90 a14 14 0 0 1 0 28 h-90 a14 14 0 0 0 0 28 h90" />
   </g>
 
-  <!-- Pipe geometry (base) -->
-  <path id="p_hot_main" class="pipeBase pipe--hot" d="M420 390 H720 V250" />
-  <path id="p_cold_main" class="pipeBase pipe--cold" d="M420 500 H720 V610 H1030" />
-  <path id="p_hot_mixer" class="pipeBase pipe--hot" d="M720 250 V180 H820" />
-  <path id="p_cold_mixer" class="pipeBase pipe--cold" d="M820 180 V250" />
-  <path id="p_hot_dhw" class="pipeBase pipe--hot" d="M720 420 H895" />
-  <path id="p_cold_dhw" class="pipeBase pipe--cold" d="M1030 610 H895 V540" />
+  <!-- Pipe base geometry (ecoMAX-like right angles) -->
+  <!-- Supply from boiler to mixer (hot) -->
+  <path class="pipeBase pipe--hot" d="M235 260 H520" />
+  <!-- Return to boiler (cold) -->
+  <path class="pipeBase pipe--cold" d="M520 430 H235" />
 
-  <!-- Dot paths (direction) -->
-  <path id="d_hot_main" d="M420 390 H720 V250" fill="none" />
-  <path id="d_cold_main" d="M1030 610 H720 V500 H420" fill="none" />
-  <path id="d_hot_mixer" d="M720 250 V180 H820" fill="none" />
-  <path id="d_cold_mixer" d="M820 250 V180" fill="none" />
-  <path id="d_hot_dhw" d="M720 420 H895" fill="none" />
-  <path id="d_cold_dhw" d="M895 540 V610 H1030" fill="none" />
+  <!-- Vertical riser to floor (from mixer) -->
+  <path class="pipeBase pipe--hot" d="M520 260 V175 H720" />
+  <path class="pipeBase pipe--cold" d="M720 175 V260" />
 
-  ${dots("d_hot_main", "hot", heatingActive, 9, 1.35)}
-  ${dots("d_cold_main", "cold", heatingActive, 9, 1.35)}
-  ${dots("d_hot_mixer", "hot", mixerActive, 7, 1.2)}
-  ${dots("d_cold_mixer", "cold", mixerActive, 7, 1.2)}
-  ${dots("d_hot_dhw", "hot", dhwActive, 7, 1.2)}
-  ${dots("d_cold_dhw", "cold", dhwActive, 7, 1.2)}
+  <!-- Branch to DHW tank -->
+  <path class="pipeBase pipe--hot" d="M520 310 H742" />
+  <path class="pipeBase pipe--cold" d="M898 430 H742 V360" />
 
-  <!-- Pumps (pulse when active) -->
-  <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(720 330)">
+  <!-- Inner tank connection lines -->
+  <path class="pipeBase pipe--hot" d="M742 310 H770" />
+  <path class="pipeBase pipe--cold" d="M770 430 H742" />
+
+  <!-- Mixing valve symbol at junction -->
+  <g class="mixer" transform="translate(520 310)">
+    <rect class="mixerBox" x="-16" y="-16" width="32" height="32" rx="6"></rect>
+    <path class="mixerX" d="M-10 -10 L10 10 M10 -10 L-10 10" />
+  </g>
+
+  <!-- Pumps (ecoMAX-style circles with play icon) -->
+  <g class="pump ${heatingActive ? "pump--active" : ""}" transform="translate(390 260)">
     <circle class="pumpBody" r="15"></circle>
     <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
   </g>
-  <g class="pump ${dhwActive ? "pump--active" : ""}" transform="translate(880 420)">
+  <g class="pump ${mixerActive ? "pump--active" : ""}" transform="translate(720 215)">
     <circle class="pumpBody" r="15"></circle>
     <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
   </g>
-  <g class="pump ${mixerActive ? "pump--active" : ""}" transform="translate(820 215)">
+  <g class="pump ${dhwActive ? "pump--active" : ""}" transform="translate(742 310)">
     <circle class="pumpBody" r="15"></circle>
     <path class="pumpIcon" d="M-6 0 L8 -8 L8 8 Z"></path>
   </g>
 
-  <!-- Temperature pills -->
-  <g class="pill pill--purple" transform="translate(480 350)">
-    <rect x="-60" y="-18" rx="18" ry="18" width="120" height="36"></rect>
+  <!-- Flow dot paths (direction) -->
+  <path id="d_hot_boiler_to_mixer" d="M235 260 H520" fill="none" />
+  <path id="d_cold_mixer_to_boiler" d="M520 430 H235" fill="none" />
+  <path id="d_hot_mixer_to_floor" d="M520 260 V175 H720" fill="none" />
+  <path id="d_cold_floor_to_mixer" d="M720 260 V175" fill="none" />
+  <path id="d_hot_mixer_to_tank" d="M520 310 H770" fill="none" />
+  <path id="d_cold_tank_to_mixer" d="M770 430 H742 V360 H520" fill="none" />
+
+  ${dots("d_hot_boiler_to_mixer", "hot", heatingActive, 10, 1.05)}
+  ${dots("d_cold_mixer_to_boiler", "cold", heatingActive, 10, 1.05)}
+  ${dots("d_hot_mixer_to_floor", "hot", mixerActive, 9, 1.15)}
+  ${dots("d_cold_floor_to_mixer", "cold", mixerActive, 9, 1.15)}
+  ${dots("d_hot_mixer_to_tank", "hot", dhwActive, 9, 1.15)}
+  ${dots("d_cold_tank_to_mixer", "cold", dhwActive, 9, 1.15)}
+
+  <!-- Temperature pills (placed like your screenshot) -->
+  <g class="pill pill--purple" transform="translate(270 235)">
+    <rect x="-54" y="-18" rx="18" ry="18" width="108" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.boilerNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(480 392)">
-    <rect x="-60" y="-16" rx="16" ry="16" width="120" height="32"></rect>
+  <g class="pill pill--purple pill--sub" transform="translate(270 275)">
+    <rect x="-54" y="-16" rx="16" ry="16" width="108" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.boilerTarget}</text>
   </g>
 
-  <g class="pill pill--purple" transform="translate(770 245)">
-    <rect x="-60" y="-18" rx="18" ry="18" width="120" height="36"></rect>
+  <g class="pill pill--purple" transform="translate(560 205)">
+    <rect x="-46" y="-18" rx="18" ry="18" width="92" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.mixerNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(770 287)">
-    <rect x="-60" y="-16" rx="16" ry="16" width="120" height="32"></rect>
+  <g class="pill pill--purple pill--sub" transform="translate(560 245)">
+    <rect x="-46" y="-16" rx="16" ry="16" width="92" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.mixerTarget}</text>
   </g>
 
-  <g class="pill pill--purple" transform="translate(960 355)">
-    <rect x="-60" y="-18" rx="18" ry="18" width="120" height="36"></rect>
+  <g class="pill pill--purple" transform="translate(820 260)">
+    <rect x="-46" y="-18" rx="18" ry="18" width="92" height="36"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.dhwNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(960 397)">
-    <rect x="-60" y="-16" rx="16" ry="16" width="120" height="32"></rect>
+  <g class="pill pill--purple pill--sub" transform="translate(820 300)">
+    <rect x="-46" y="-16" rx="16" ry="16" width="92" height="32"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.dhwTarget}</text>
   </g>
 
-  <!-- Left panel -->
-  <g class="leftPanel" transform="translate(140 220)">
-    <rect class="panel" x="-130" y="-200" width="260" height="460" rx="10"></rect>
-    <text class="panelTitle" x="0" y="-170" text-anchor="middle">ecoMAX810P</text>
-
-    <g transform="translate(0 -110)">
-      <text class="panelLabel" x="0" y="-18" text-anchor="middle">Operation mode</text>
-      <text class="panelValue" x="0" y="18" text-anchor="middle">${v.opMode}</text>
-    </g>
-
-    <g transform="translate(0 -30)">
-      <text class="panelLabel" x="0" y="-18" text-anchor="middle">Boiler output</text>
-      <text class="panelValue" x="0" y="18" text-anchor="middle">${v.boilerLoad}</text>
-    </g>
-
-    <g transform="translate(0 50)">
-      <text class="panelLabel" x="0" y="-18" text-anchor="middle">Fuel level</text>
-      <text class="panelValue" x="0" y="18" text-anchor="middle">${v.fuelLevel}</text>
-    </g>
-
-    <g transform="translate(0 130)">
-      <text class="panelLabel" x="0" y="-18" text-anchor="middle">Fan output</text>
-      <text class="panelValue" x="0" y="18" text-anchor="middle">${v.fanPower}</text>
-    </g>
-
-    <g transform="translate(0 205)">
-      <text class="panelLabel" x="0" y="-18" text-anchor="middle">Modes</text>
-      <text class="panelValue panelValueSmall" x="0" y="14" text-anchor="middle">${v.summerMode}</text>
-      <text class="panelValue panelValueSmall" x="0" y="42" text-anchor="middle">${v.mixerMode}</text>
-    </g>
-
-    ${v.alertOn ? `<g transform="translate(0 200)"><text class="panelAlert" x="0" y="0" text-anchor="middle">ALERT</text></g>` : ""}
+  <!-- Local sensor pills (compact, under boiler) -->
+  <g class="pill pill--purple pill--tiny" transform="translate(320 355)">
+    <rect x="-62" y="-16" rx="16" ry="16" width="124" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">Flue ${v.exhaustTemp}</text>
+  </g>
+  <g class="pill pill--purple pill--tiny" transform="translate(320 400)">
+    <rect x="-62" y="-16" rx="16" ry="16" width="124" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">Feeder ${v.feederTemp}</text>
+  </g>
+  <g class="pill pill--purple pill--tiny" transform="translate(320 445)">
+    <rect x="-62" y="-16" rx="16" ry="16" width="124" height="32"></rect>
+    <text text-anchor="middle" dominant-baseline="central">O₂ ${v.o2}</text>
   </g>
 </svg>
 `.trim();
