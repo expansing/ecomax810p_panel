@@ -317,6 +317,14 @@ const renderDiagramSvgV2 = (v, backgroundUrl) => {
       <stop offset="55%" stop-color="rgba(80,160,255,0.55)"/>
       <stop offset="100%" stop-color="rgba(0,170,255,0.90)"/>
     </linearGradient>
+    <linearGradient id="dhwPillGradientHot" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="rgba(255,100,100,0.95)"/>
+      <stop offset="100%" stop-color="rgba(255,60,60,0.95)"/>
+    </linearGradient>
+    <linearGradient id="dhwPillGradientCold" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="rgba(100,180,255,0.95)"/>
+      <stop offset="100%" stop-color="rgba(60,140,255,0.95)"/>
+    </linearGradient>
     <filter id="glow">
       <feGaussianBlur stdDeviation="2.4" result="coloredBlur" />
       <feMerge>
@@ -366,8 +374,9 @@ const renderDiagramSvgV2 = (v, backgroundUrl) => {
   <path class="pipeBase pipe--hot" d="M255 280 H580" stroke-dasharray="6 4" fill="none" />
   
   <g class="mixer" transform="translate(580 350)">
-    <path class="mixerTriangle" d="M-12 -20 L12 0 L-12 20 Z" fill="rgba(255,255,255,0.95)" stroke="rgba(200,200,200,0.5)" stroke-width="1.5"></path>
-    ${mixerClosed ? `<path class="mixerX" d="M-8 -8 L8 8 M8 -8 L-8 8" stroke="rgba(220,40,40,0.95)" stroke-width="3" stroke-linecap="round"></path>` : ""}
+    <rect class="mixerBox" x="-20" y="-24" width="40" height="48" rx="8" fill="rgba(200,200,200,0.85)" stroke="rgba(150,150,150,0.4)" stroke-width="1.5"></rect>
+    <path class="mixerTriangle" d="M-8 -12 L12 0 L-8 12 Z" fill="rgba(255,255,255,0.95)" stroke="rgba(180,180,180,0.3)" stroke-width="1"></path>
+    ${mixerClosed ? `<path class="mixerX" d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="rgba(220,40,40,0.95)" stroke-width="3.5" stroke-linecap="round"></path>` : ""}
   </g>
 
   <path class="pipeBase pipe--hot" d="M580 280 V180 H780" stroke-dasharray="6 4" fill="none" />
@@ -397,12 +406,12 @@ const renderDiagramSvgV2 = (v, backgroundUrl) => {
     <path class="coil coil--cold" d="M-40 60 h80 a20 20 0 0 0 0 40 h-80" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="12" stroke-linecap="round" opacity="0.6"></path>
   </g>
 
-  <g class="pill pill--purple" transform="translate(860 280)">
-    <rect x="-45" y="-18" rx="18" ry="18" width="90" height="36"></rect>
+  <g class="pill pill--dhw-hot" transform="translate(860 280)">
+    <rect x="-45" y="-18" rx="18" ry="18" width="90" height="36" fill="url(#dhwPillGradientHot)" stroke="rgba(255,255,255,0.25)" stroke-width="1"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.dhwNow}</text>
   </g>
-  <g class="pill pill--purple pill--sub" transform="translate(860 320)">
-    <rect x="-45" y="-16" rx="16" ry="16" width="90" height="32"></rect>
+  <g class="pill pill--dhw-cold pill--sub" transform="translate(860 320)">
+    <rect x="-45" y="-16" rx="16" ry="16" width="90" height="32" fill="url(#dhwPillGradientCold)" stroke="rgba(255,255,255,0.25)" stroke-width="1"></rect>
     <text text-anchor="middle" dominant-baseline="central">${v.dhwTarget}</text>
   </g>
 
@@ -669,7 +678,8 @@ class EcoMax810pDiagramCard extends HTMLElement {
   .floorPlate{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.10);stroke-width:1}
   .floorCoil{fill:none;stroke:rgba(220,40,40,.85);stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
 
-  .mixerTriangle{filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+  .mixerBox{filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+  .mixerTriangle{filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
   .mixerX{stroke-linecap:round}
 
   .pipeBase{fill:none;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;opacity:.9}

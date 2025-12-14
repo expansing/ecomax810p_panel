@@ -258,7 +258,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .floorPlate{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.10);stroke-width:1}
   .floorCoil{fill:none;stroke:rgba(220,40,40,.85);stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
 
-  .mixerTriangle{filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+  .mixerBox{filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+  .mixerTriangle{filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
   .mixerX{stroke-linecap:round}
 
   .pipeBase{fill:none;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
