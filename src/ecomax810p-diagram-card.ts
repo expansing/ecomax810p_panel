@@ -4,7 +4,8 @@ import { computeValues, deriveStatus } from "./svg";
 import { renderSystemDiagram } from "./system-diagram";
 
 // Replaced with the package.json version at build time by rollup.config.mjs.
-const CARD_VERSION = "__CARD_VERSION__";
+declare const __CARD_VERSION__: string;
+const CARD_VERSION = __CARD_VERSION__;
 
 console.info(
   `%c ECOMAX810P-DIAGRAM-CARD %c v${CARD_VERSION} `,

@@ -13,12 +13,12 @@ export default {
     format: "es"
   },
   plugins: [
+    resolve(),
+    typescript({ tsconfig: "./tsconfig.build.json" }),
     replace({
       preventAssignment: true,
       values: { __CARD_VERSION__: JSON.stringify(pkg.version) }
     }),
-    resolve(),
-    typescript({ tsconfig: "./tsconfig.build.json" }),
     terser({
       format: { comments: false }
     })
