@@ -93,6 +93,8 @@ entities:
 
 By default (`theme: auto`) the card follows the active Home Assistant light/dark mode. Set `theme: dark` or `theme: light` to override it.
 
+Sensor values shown on the card (on the system diagram and in the diagnostics grid) are clickable and open Home Assistant's standard history/more-info dialog for that entity, just like other cards. Interactive controls (switches, steppers, mode chips) are not clickable for history since they're already used to change the entity.
+
 ## Controls
 
 Add any of these optional entity mappings to enable an interactive control on the card. Each control only appears when its entity is mapped:

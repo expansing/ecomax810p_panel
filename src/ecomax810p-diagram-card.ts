@@ -144,7 +144,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
     const v = computeValues(this._hass, entities);
-    const svg = renderSystemDiagram(v, narrow);
+    const svg = renderSystemDiagram(v, entities, narrow);
     const status = deriveStatus(v);
 
     const isDark = theme === "dark" || (theme !== "light" && this._hass.themes?.darkMode === true);
@@ -152,8 +152,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const showDiagnostics = show_diagnostics !== false;
     const hass = this._hass;
 
-    const tile = (label: string, value: string, icon: string, className = ""): string => `
-      <div class="tile ${className}">
+    const tile = (label: string, value: string, icon: string, className = "", entityId?: string): string => `
+      <div class="tile ${entityId ? "tile--clickable" : ""} ${className}" ${entityId ? `tabindex="0" role="button" data-entity-link="${esc(entityId)}"` : ""}>
         <div class="tileIcon">${icon}</div>
         <div class="tileText">
           <div class="tileValue">${esc(value)}</div>
@@ -200,7 +200,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
                             ? "Off"
                             : raw
                         : fmtAuto(ent);
-              return tile(label, value, icon);
+              return tile(label, value, icon, "", t.entity);
             })
             .join("")
         : "";
@@ -290,20 +290,20 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const modesTile = summerModeTile && mixerModeTile
       ? ""
       : summerModeTile
-        ? tile("Mixer work mode", v.mixerMode, iconAlert)
+        ? tile("Mixer work mode", v.mixerMode, iconAlert, "", entities.mixer_work_mode)
         : mixerModeTile
-          ? tile("Summer mode", v.summerMode, iconAlert)
+          ? tile("Summer mode", v.summerMode, iconAlert, "", entities.summer_mode)
           : tile("Modes", `${v.summerMode} / ${v.mixerMode}`, iconAlert);
 
     const diagnosticsHtml = showDiagnostics
       ? `
   <div class="stats">
-    ${tile("Fan output", v.fanPower, iconFan, v.fanRunning ? "tile--spin" : "")}
-    ${tile("Flue temp", v.exhaustTemp, iconThermo, v.exhaustFanRunning ? "tile--active" : "")}
-    ${tile("Feeder temp", v.feederTemp, iconThermo, v.feederRunning ? "tile--active" : "")}
-    ${tile("O₂ level", v.o2, iconThermo)}
-    ${tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "")}
-    ${tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "")}
+    ${tile("Fan output", v.fanPower, iconFan, v.fanRunning ? "tile--spin" : "", entities.fan_power)}
+    ${tile("Flue temp", v.exhaustTemp, iconThermo, v.exhaustFanRunning ? "tile--active" : "", entities.exhaust_temperature)}
+    ${tile("Feeder temp", v.feederTemp, iconThermo, v.feederRunning ? "tile--active" : "", entities.feeder_temperature)}
+    ${tile("O₂ level", v.o2, iconThermo, "", entities.oxygen_level)}
+    ${tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "", entities.circulation_pump_running)}
+    ${tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "", entities.lighter_running)}
     ${modesTile}
     ${extraTilesHtml}
   </div>
@@ -385,6 +385,10 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .tile--active{border-color:#9fd6c3;box-shadow:inset 3px 0 #2bba78}
   .tile--alert{border-color:#e99c8e;box-shadow:inset 3px 0 #db5d48}
   .tile--spin .tileIcon{background:#fff0dc}.tile--spin .tileIcon svg{fill:#c87327}
+  .tile--clickable{cursor:pointer}
+  .tile--clickable:hover,.tile--clickable:focus-visible{border-color:#8fc9bd;outline:none}
+  .entityLink{cursor:pointer}
+  .entityLink:hover,.entityLink:focus-visible{opacity:.8;outline:none}
 
   .cardShell--dark{background:linear-gradient(145deg,#172622 0%,#101b19 100%);color:#e6f1ed}
   .cardShell--dark .overview{border-color:#2d4943;background:#192b27}.cardShell--dark .overviewEyebrow{color:#9cb8b0}.cardShell--dark .overviewTitle{color:#f0f8f5}
@@ -402,6 +406,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .cardShell--dark .pumpGlyph .pumpBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#173d2c;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#5c7770}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
   .cardShell--dark .heaterGlyph .heaterBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .heaterGlyph.is-active .heaterBody{fill:#3d2f16;stroke:#e0a838}.cardShell--dark .heaterGlyph .heaterBolt{fill:#5c7770}.cardShell--dark .heaterGlyph.is-active .heaterBolt{fill:#f0c05e}.cardShell--dark .heaterGlyph.is-active .heaterRing{stroke:rgba(224,168,56,.35)}
   .cardShell--dark .stats{background:#14231f}.cardShell--dark .tile{background:#1d302b;border-color:#38554e}.cardShell--dark .tileIcon{background:#29443d}.cardShell--dark .tileIcon svg{fill:#9de1ca}.cardShell--dark .tileValue{color:#f0f8f5}.cardShell--dark .tileLabel{color:#acc4bd}.cardShell--dark .tile--active{border-color:#478467;box-shadow:inset 3px 0 #42c985}.cardShell--dark .tile--alert{border-color:#aa5e53;box-shadow:inset 3px 0 #e57866}.cardShell--dark .tile--spin .tileIcon{background:#4a3823}.cardShell--dark .tile--spin .tileIcon svg{fill:#ffc875}
+  .cardShell--dark .tile--clickable:hover,.cardShell--dark .tile--clickable:focus-visible{border-color:#4c7167}
   .cardShell--dark .controls{background:#14231f;border-color:#38554e}
   .cardShell--dark .ctrlSwitch{background:#1d302b;border-color:#38554e}
   .cardShell--dark .ctrlSwitch.is-on{background:#2bba78;border-color:#2bba78}
@@ -438,6 +443,30 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     for (const btn of ctrlButtons) {
       btn.addEventListener("click", () => this._handleControlClick(btn));
     }
+
+    const entityLinks = Array.from(this.shadowRoot.querySelectorAll("[data-entity-link]"));
+    for (const el of entityLinks) {
+      const entityId = el.getAttribute("data-entity-link");
+      if (!entityId) continue;
+      el.addEventListener("click", () => this._openMoreInfo(entityId));
+      el.addEventListener("keydown", (ev: Event) => {
+        const key = (ev as KeyboardEvent).key;
+        if (key === "Enter" || key === " ") {
+          ev.preventDefault();
+          this._openMoreInfo(entityId);
+        }
+      });
+    }
+  }
+
+  private _openMoreInfo(entityId: string): void {
+    this.dispatchEvent(
+      new CustomEvent("hass-more-info", {
+        detail: { entityId },
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
   private _handleControlClick(btn: HTMLElement): void {
