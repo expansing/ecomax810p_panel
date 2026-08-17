@@ -375,13 +375,13 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .compactNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}.compactNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.compactNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round;stroke:#d3dfdc}.compactPipe.is-active{stroke:#d96d4f}
 
-  .stats{margin:0;padding:14px 18px 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#edf4f2}
-  .tile{min-height:66px;padding:9px 10px;gap:9px;display:flex;align-items:center;background:#fff;border:1px solid #d6e4df;border-radius:6px;box-shadow:none}
-  .tileIcon{width:30px;height:30px;border-radius:5px;background:#e1efeb;display:grid;place-items:center;flex:0 0 auto}
-  .tileIcon svg{width:17px;height:17px;fill:#1d6c61}
+  .stats{margin:0;padding:10px 14px 14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;background:#edf4f2}
+  .tile{min-height:50px;padding:6px 8px;gap:7px;display:flex;align-items:center;background:#fff;border:1px solid #d6e4df;border-radius:6px;box-shadow:none}
+  .tileIcon{width:24px;height:24px;border-radius:5px;background:#e1efeb;display:grid;place-items:center;flex:0 0 auto}
+  .tileIcon svg{width:14px;height:14px;fill:#1d6c61}
   .tileText{min-width:0}
-  .tileValue{font-size:15px;font-weight:800;color:#1d3c38;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tileLabel{font-size:11px;font-weight:700;color:#5c746f;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tileValue{font-size:14px;font-weight:800;color:#1d3c38;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tileLabel{font-size:10px;font-weight:700;color:#5c746f;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tile--active{border-color:#9fd6c3;box-shadow:inset 3px 0 #2bba78}
   .tile--alert{border-color:#e99c8e;box-shadow:inset 3px 0 #db5d48}
   .tile--spin .tileIcon{background:#fff0dc}.tile--spin .tileIcon svg{fill:#c87327}
@@ -420,8 +420,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   :host([data-narrow]) .diagramFrame{padding:12px 12px 2px}
   :host([data-narrow]) .controls{padding:10px 12px;grid-template-columns:1fr;gap:7px}
   :host([data-narrow]) .ctrlTile--wide{grid-column:auto}
-  :host([data-narrow]) .stats{padding:10px 12px 14px;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-  :host([data-narrow]) .tile{min-height:58px;padding:8px}
+  :host([data-narrow]) .stats{padding:8px 10px 12px;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  :host([data-narrow]) .tile{min-height:46px;padding:6px}
 </style>
 <ha-card>
   <div class="${wrapClass}">
