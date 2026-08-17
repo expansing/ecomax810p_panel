@@ -9,6 +9,7 @@ export type HomeAssistant = {
     darkMode?: boolean;
   };
   localize?: (key: string, ...args: unknown[]) => string;
+  callService: (domain: string, service: string, serviceData?: Record<string, unknown>) => Promise<unknown>;
 };
 
 export type LovelaceCardEditor = HTMLElement;

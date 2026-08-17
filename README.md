@@ -43,6 +43,10 @@ entities:
   connection_status: binary_sensor.ecomax_810p_l_touch_connection_status
   outside_temperature: sensor.ecomax_810p_l_touch_outside_temperature
 
+  boiler_switch: switch.ecomax_810p_l_touch_controller_switch
+  boiler_target_temperature_control: number.ecomax_810p_l_touch_target_heating_temperature
+  mixer_target_temperature_control: number.ecomax_810p_l_touch_mixer_1_target_mixer_temperature
+
   boiler_load: sensor.ecomax_810p_l_touch_boiler_load
   fuel_level: sensor.ecomax_810p_l_touch_fuel_level
   fan_power: sensor.ecomax_810p_l_touch_fan_power
@@ -83,10 +87,21 @@ entities:
 - `breakpoint` (optional, default `700`): width in px used for `layout: auto`
 - `theme` (optional, default `auto`): `auto` | `light` | `dark`. `auto` follows Home Assistant's active light/dark mode; `light`/`dark` force the card's appearance regardless of the dashboard theme.
 - `show_diagnostics` (optional, default `true`): show the secondary diagnostics grid (fan output, flue/feeder temperature, O₂ level, circulation pump, lighter, operating modes). Primary values (boiler/heating/DHW temperatures, boiler load, fuel level, outdoor temperature) always appear once, on the system diagram.
+- `show_controls` (optional, default `true`): show interactive controls for any of the writable entities below that you've mapped. Controls for entities you haven't mapped are simply omitted.
 - `extra_tiles` (optional): list of additional diagnostic tiles. Each item supports `entity`, optional `label`, optional `icon` (`thermo|fire|fan|pump|alert`), and optional `format` (`auto|raw|temp|pct|onoff`).
 - `entities` (required): mapping of your ecoMAX entities (see example above). `connection_status` is optional — map it to your device's connectivity `binary_sensor` to show an "Offline" status when the controller is unreachable, instead of just "Off". `dhw_electric_heater` is optional — map it to any `switch` entity (e.g. a smart plug) that controls an electric heating element inside the DHW tank; this is not part of the ecoMAX controller itself, it's shown as a separate indicator on the DHW box.
 
 By default (`theme: auto`) the card follows the active Home Assistant light/dark mode. Set `theme: dark` or `theme: light` to override it.
+
+## Controls
+
+Add any of these optional entity mappings to enable an interactive control on the card. Each control only appears when its entity is mapped:
+
+- `boiler_switch`: a `switch` entity that turns the boiler controller on/off → shows a power toggle.
+- `boiler_target_temperature_control`: the writable `number` entity for the boiler's target heating temperature (e.g. `number.ecomax_810p_l_touch_target_heating_temperature`) → shows a −/+ stepper.
+- `mixer_target_temperature_control`: the writable `number` entity for the heating circuit's target temperature (e.g. `number.ecomax_810p_l_touch_mixer_1_target_mixer_temperature`) → shows a −/+ stepper.
+- `water_heater`: the same `water_heater` entity already used for display also gets a −/+ target-temperature stepper.
+- `summer_mode` / `mixer_work_mode`: the same `select` entities already used for display also get a tap-to-select control, one button per available option.
 
 ## Development
 

@@ -29,10 +29,12 @@
         state: String(state),
         attributes: unit ? { unit_of_measurement: unit } : {}
       });
+      const entityAttrs = (state, attributes) => ({ state: String(state), attributes: attributes || {} });
       const prefix = "ecomax_810p_l_touch";
       const states = {
         [`sensor.${prefix}_state`]: entity("Heating"),
         [`binary_sensor.${prefix}_alert`]: entity("off"),
+        [`binary_sensor.${prefix}_connection_status`]: entity("on"),
         [`sensor.${prefix}_outside_temperature`]: entity(4, "°C"),
         [`sensor.${prefix}_boiler_load`]: entity(62, "%"),
         [`sensor.${prefix}_fuel_level`]: entity(81, "%"),
@@ -46,9 +48,12 @@
         [`sensor.${prefix}_exhaust_temperature`]: entity(134, "°C"),
         [`sensor.${prefix}_feeder_temperature`]: entity(31, "°C"),
         [`sensor.${prefix}_oxygen_level`]: entity(8.4, "%"),
-        [`select.${prefix}_summer_mode`]: entity("Winter"),
-        [`select.${prefix}_mixer_1_work_mode`]: entity("Thermostat"),
-        [`water_heater.${prefix}_indirect_water_heater`]: entity("heating"),
+        [`select.${prefix}_summer_mode`]: entityAttrs("winter", { options: ["winter", "summer"] }),
+        [`select.${prefix}_mixer_1_work_mode`]: entityAttrs("heated_floor", { options: ["heated_floor", "thermostat"] }),
+        [`water_heater.${prefix}_indirect_water_heater`]: entityAttrs("performance", { temperature: 50, min_temp: 30, max_temp: 65, target_temp_step: 1 }),
+        [`switch.${prefix}_controller_switch`]: entity("on"),
+        [`number.${prefix}_target_heating_temperature`]: entityAttrs(75, { min: 30, max: 80, step: 1 }),
+        [`number.${prefix}_mixer_1_target_mixer_temperature`]: entityAttrs(42, { min: 20, max: 45, step: 1 }),
         [`binary_sensor.${prefix}_heating_pump`]: entity("on"),
         [`binary_sensor.${prefix}_water_heater_pump`]: entity("on"),
         [`binary_sensor.${prefix}_mixer_1_mixer_pump`]: entity("on"),
@@ -65,10 +70,12 @@
         title: "ecoMAX810P",
         layout: "auto",
         entities: Object.fromEntries(Object.entries({
-          state: `sensor.${prefix}_state`, alert: `binary_sensor.${prefix}_alert`, outside_temperature: `sensor.${prefix}_outside_temperature`,
+          state: `sensor.${prefix}_state`, alert: `binary_sensor.${prefix}_alert`, connection_status: `binary_sensor.${prefix}_connection_status`, outside_temperature: `sensor.${prefix}_outside_temperature`,
           boiler_load: `sensor.${prefix}_boiler_load`, fuel_level: `sensor.${prefix}_fuel_level`, fan_power: `sensor.${prefix}_fan_power`,
           boiler_temperature: `sensor.${prefix}_heating_temperature`, boiler_target_temperature: `sensor.${prefix}_heating_target_temperature`,
+          boiler_switch: `switch.${prefix}_controller_switch`, boiler_target_temperature_control: `number.${prefix}_target_heating_temperature`,
           mixer_temperature: `sensor.${prefix}_mixer_1_mixer_temperature`, mixer_target_temperature: `sensor.${prefix}_mixer_1_mixer_target_temperature`,
+          mixer_target_temperature_control: `number.${prefix}_mixer_1_target_mixer_temperature`,
           dhw_temperature: `sensor.${prefix}_water_heater_temperature`, dhw_target_temperature: `sensor.${prefix}_water_heater_target_temperature`,
           exhaust_temperature: `sensor.${prefix}_exhaust_temperature`, feeder_temperature: `sensor.${prefix}_feeder_temperature`, oxygen_level: `sensor.${prefix}_oxygen_level`,
           summer_mode: `select.${prefix}_summer_mode`, mixer_work_mode: `select.${prefix}_mixer_1_work_mode`, water_heater: `water_heater.${prefix}_indirect_water_heater`,
@@ -76,7 +83,14 @@
           circulation_pump_running: `binary_sensor.${prefix}_circulation_pump`, fan_running: `binary_sensor.${prefix}_fan`, exhaust_fan_running: `binary_sensor.${prefix}_exhaust_fan`, feeder_running: `binary_sensor.${prefix}_feeder`, lighter_running: `binary_sensor.${prefix}_lighter`
         }))
       });
-      card.hass = { states, themes: { darkMode: isDark } };
+      card.hass = {
+        states,
+        themes: { darkMode: isDark },
+        callService: (domain, service, data) => {
+          console.log("callService (preview stub)", domain, service, data);
+          return Promise.resolve();
+        }
+      };
     </script>
   </body>
 </html>

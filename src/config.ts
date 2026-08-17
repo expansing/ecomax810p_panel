@@ -11,8 +11,16 @@ export type EntityMap = {
   boiler_temperature?: string;
   boiler_target_temperature?: string;
 
+  /** Writable `switch` entity that turns the boiler controller on/off. */
+  boiler_switch?: string;
+  /** Writable `number` entity for the target heating temperature (enables a +/- control). */
+  boiler_target_temperature_control?: string;
+
   mixer_temperature?: string;
   mixer_target_temperature?: string;
+
+  /** Writable `number` entity for the target mixer/heating-circuit temperature (enables a +/- control). */
+  mixer_target_temperature_control?: string;
 
   dhw_temperature?: string;
   dhw_target_temperature?: string;
@@ -70,6 +78,14 @@ export type EcoMaxDiagramCardConfig = {
    * shown once on the system diagram. Default: true.
    */
   show_diagnostics?: boolean;
+
+  /**
+   * Show interactive controls (boiler power, target temperatures, summer/winter
+   * mode, mixer work mode, DHW temperature) for any of the writable entities
+   * that are configured. Controls for entities you haven't mapped are simply
+   * omitted. Default: true.
+   */
+  show_controls?: boolean;
 
   /**
    * Add any extra diagnostic tiles you want rendered alongside the built-in
