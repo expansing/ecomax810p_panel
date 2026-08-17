@@ -1,29 +1,149 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="880" viewBox="0 0 1200 880" role="img" aria-labelledby="title description" font-family="sans-serif">
   <title id="title">ecoMAX810P Diagram Card</title>
-  <desc id="description">Preview of boiler, mixer, and domestic hot water status in the Home Assistant card.</desc>
-  <rect width="1200" height="675" fill="#20262d"/>
-  <rect x="44" y="42" width="1112" height="590" rx="8" fill="#f4f7f8"/>
-  <rect x="44" y="42" width="1112" height="74" rx="8" fill="#0d6b74"/>
-  <text x="82" y="88" fill="#ffffff" font-family="sans-serif" font-size="30" font-weight="700">ecoMAX810P</text>
-  <text x="82" y="310" fill="#263238" font-family="sans-serif" font-size="28" font-weight="700">Boiler</text>
-  <rect x="82" y="336" width="202" height="184" rx="4" fill="#dce6e7" stroke="#0d6b74" stroke-width="6"/>
-  <path d="M183 356v142M122 420h122" stroke="#d1503b" stroke-width="18" stroke-linecap="round"/>
-  <text x="111" y="560" fill="#263238" font-family="sans-serif" font-size="24">72 C / 75 C</text>
-  <path d="M290 430h218" fill="none" stroke="#d1503b" stroke-width="16" stroke-linecap="round"/>
-  <circle cx="398" cy="430" r="29" fill="#f0b341" stroke="#263238" stroke-width="5"/>
-  <text x="344" y="381" fill="#263238" font-family="sans-serif" font-size="26" font-weight="700">Mixer</text>
-  <path d="M528 430h182q28 0 28 28v62" fill="none" stroke="#df7855" stroke-width="16" stroke-linecap="round"/>
-  <rect x="738" y="315" width="148" height="224" rx="48" fill="#cee3ea" stroke="#0d6b74" stroke-width="6"/>
-  <path d="M774 420h76" stroke="#df7855" stroke-width="15"/>
-  <text x="747" y="278" fill="#263238" font-family="sans-serif" font-size="26" font-weight="700">DHW</text>
-  <text x="742" y="578" fill="#263238" font-family="sans-serif" font-size="24">48 C / 50 C</text>
-  <rect x="936" y="184" width="164" height="92" rx="4" fill="#ffffff" stroke="#c3d0d3" stroke-width="2"/>
-  <text x="958" y="222" fill="#526268" font-family="sans-serif" font-size="20">Boiler load</text>
-  <text x="958" y="255" fill="#263238" font-family="sans-serif" font-size="30" font-weight="700">62%</text>
-  <rect x="936" y="300" width="164" height="92" rx="4" fill="#ffffff" stroke="#c3d0d3" stroke-width="2"/>
-  <text x="958" y="338" fill="#526268" font-family="sans-serif" font-size="20">Fuel level</text>
-  <text x="958" y="371" fill="#263238" font-family="sans-serif" font-size="30" font-weight="700">81%</text>
-  <rect x="936" y="416" width="164" height="92" rx="4" fill="#ffffff" stroke="#c3d0d3" stroke-width="2"/>
-  <text x="958" y="454" fill="#526268" font-family="sans-serif" font-size="20">Status</text>
-  <text x="958" y="487" fill="#178048" font-family="sans-serif" font-size="27" font-weight="700">Heating</text>
+  <desc id="description">Current card: status header, boiler/heating-circuit/DHW system diagram with clickable values, tile-based interactive controls, and a diagnostics grid.</desc>
+  <rect width="1200" height="880" fill="#20262d"/>
+  <rect x="44" y="42" width="1112" height="778" rx="10" fill="#eef5f3" stroke="#cbdad5" stroke-width="1"/>
+
+  <!-- Header -->
+  <rect x="44" y="42" width="1112" height="88" rx="10" fill="#f7fbfa"/>
+  <line x1="44" y1="130" x2="1156" y2="130" stroke="#ceded9" stroke-width="1"/>
+  <text x="84" y="76" fill="#52716c" font-size="12" font-weight="800" letter-spacing="1">HEATING SYSTEM</text>
+  <text x="84" y="104" fill="#163b37" font-size="28" font-weight="700">ecoMAX810P</text>
+  <rect x="972" y="62" width="128" height="34" rx="6" fill="#d7eee2"/>
+  <circle cx="990" cy="79" r="5" fill="#17633c"/>
+  <text x="1002" y="84" fill="#17633c" font-size="15" font-weight="700">Heating</text>
+  <text x="1100" y="112" text-anchor="end" fill="#5c746f" font-size="13" font-weight="700">Serving heating circuit</text>
+
+  <!-- System diagram (boiler / heating circuit / hot water) -->
+  <g transform="translate(76 150) scale(1.091)">
+    <rect width="960" height="350" rx="10" fill="#f8fbfa" stroke="#d9e7e3" stroke-width="1"/>
+
+    <g transform="translate(480 27)">
+      <rect x="-76" y="-14" width="152" height="28" rx="4" fill="#e8f1ee" stroke="#c8dcd5" stroke-width="1"/>
+      <text text-anchor="middle" dominant-baseline="central" fill="#41665e" font-size="11" font-weight="800">OUTSIDE 4°C</text>
+    </g>
+
+    <path d="M286 135 H412" fill="none" stroke="#d96d4f" stroke-width="8" stroke-linecap="round"/>
+    <path d="M412 170 H286" fill="none" stroke="#4f99a7" stroke-width="8" stroke-linecap="round"/>
+    <path d="M286 260 H412" fill="none" stroke="#d3dfdc" stroke-width="8" stroke-linecap="round"/>
+    <path d="M412 295 H286" fill="none" stroke="#d3dfdc" stroke-width="8" stroke-linecap="round"/>
+
+    <g transform="translate(52 100)">
+      <rect width="234" height="230" rx="8" fill="#fff" stroke="#d2e0dc" stroke-width="1.5"/>
+      <g transform="translate(20 16) scale(0.6)"><path fill="#3f8f7e" d="M13.5 0s.5 2.5-1 4.5S9 8 9 11a6 6 0 0 0 12 0c0-4.5-3-7-3-9.5 0 0-.5 2.5-2 4.5S13.5 0 13.5 0ZM12 24a8 8 0 0 1-8-8c0-4.5 2.5-7.5 4.5-10C8 10 12 11 12 16c0-3 2-4 3-6 0 0 5 3 5 6a8 8 0 0 1-8 8Z"/></g>
+      <text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">BOILER</text>
+      <text x="20" y="82" fill="#173d39" font-size="39" font-weight="800">72°C</text>
+      <text x="20" y="106" fill="#56706b" font-size="11" font-weight="800">SETPOINT 75°C</text>
+      <line x1="20" y1="126" x2="214" y2="126" stroke="#d8e5e1" stroke-width="1"/>
+      <text x="20" y="154" fill="#68817c" font-size="10" font-weight="800">OUTPUT</text>
+      <text x="20" y="179" fill="#234640" font-size="19" font-weight="800">62%</text>
+      <text x="120" y="154" fill="#68817c" font-size="10" font-weight="800">FUEL</text>
+      <text x="120" y="179" fill="#234640" font-size="19" font-weight="800">81%</text>
+      <text x="20" y="211" fill="#52716c" font-size="11" font-weight="800">HEATING PUMP · ACTIVE</text>
+      <g transform="translate(207 29)">
+        <circle r="12" fill="none" stroke="#2bba7833" stroke-width="3"/>
+        <circle r="9" fill="#e4f6ec" stroke="#2bba78" stroke-width="1.5"/>
+        <path fill="#1f9a5f" d="M-3.2 -5.0 L5.0 0 L-3.2 5.0 Z"/>
+      </g>
+    </g>
+
+    <g transform="translate(412 100)">
+      <rect width="228" height="105" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/>
+      <g transform="translate(20 16) scale(0.6)"><path fill="#b8842f" d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g>
+      <text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HEATING CIRCUIT</text>
+      <text x="20" y="70" fill="#173d39" font-size="31" font-weight="800">39°C</text>
+      <text x="106" y="70" fill="#56706b" font-size="11" font-weight="800">TARGET 42°C</text>
+      <text x="20" y="94" fill="#52716c" font-size="11" font-weight="800">Active · Thermostat</text>
+      <g transform="translate(200 29)">
+        <circle r="12" fill="none" stroke="#2bba7833" stroke-width="3"/>
+        <circle r="9" fill="#e4f6ec" stroke="#2bba78" stroke-width="1.5"/>
+        <path fill="#1f9a5f" d="M-3.2 -5.0 L5.0 0 L-3.2 5.0 Z"/>
+      </g>
+    </g>
+
+    <g transform="translate(412 225)">
+      <rect width="228" height="105" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/>
+      <g transform="translate(20 16) scale(0.6)"><path fill="#3f88a3" d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g>
+      <text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text>
+      <text x="20" y="70" fill="#173d39" font-size="31" font-weight="800">48°C</text>
+      <text x="106" y="70" fill="#56706b" font-size="11" font-weight="800">TARGET 50°C</text>
+      <text x="20" y="94" fill="#52716c" font-size="11" font-weight="800">Idle · Heating</text>
+      <g transform="translate(200 29)">
+        <circle r="9" fill="#eef3f1" stroke="#c6dad4" stroke-width="1.5"/>
+        <path fill="#aabcb8" d="M-3.2 -5.0 L5.0 0 L-3.2 5.0 Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Interactive controls -->
+  <g font-size="11" font-weight="700" fill="#5c746f">
+    <rect x="76" y="552" width="250" height="54" rx="6" fill="#fff" stroke="#cfe3dd" stroke-width="1.5"/>
+    <rect x="90" y="562" width="34" height="18" rx="9" fill="#2bba78"/>
+    <circle cx="115" cy="571" r="7" fill="#fff"/>
+    <text x="90" y="596">Boiler power</text>
+
+    <rect x="342" y="552" width="250" height="54" rx="6" fill="#fff" stroke="#cfe3dd" stroke-width="1.5"/>
+    <text x="356" y="577" font-size="14" font-weight="800" fill="#1d3c38">− 75°C +</text>
+    <text x="356" y="596">Boiler target</text>
+
+    <rect x="608" y="552" width="250" height="54" rx="6" fill="#fff" stroke="#cfe3dd" stroke-width="1.5"/>
+    <text x="622" y="577" font-size="14" font-weight="800" fill="#1d3c38">− 42°C +</text>
+    <text x="622" y="596">Heating circuit target</text>
+
+    <rect x="874" y="552" width="250" height="54" rx="6" fill="#fff" stroke="#cfe3dd" stroke-width="1.5"/>
+    <text x="888" y="577" font-size="14" font-weight="800" fill="#1d3c38">− 50°C +</text>
+    <text x="888" y="596">DHW target</text>
+
+    <rect x="76" y="616" width="516" height="54" rx="6" fill="#fff" stroke="#cfe3dd" stroke-width="1.5"/>
+    <rect x="90" y="626" width="60" height="22" rx="11" fill="#fff" stroke="#c6dad4"/>
+    <text x="102" y="641" fill="#52716c" font-weight="800">winter</text>
+    <rect x="156" y="626" width="66" height="22" rx="11" fill="#2bba78"/>
+    <text x="168" y="641" fill="#fff" font-weight="800">summer</text>
+    <text x="90" y="660">Summer mode</text>
+
+    <rect x="608" y="616" width="516" height="54" rx="6" fill="#fff" stroke="#cfe3dd" stroke-width="1.5"/>
+    <rect x="622" y="626" width="92" height="22" rx="11" fill="#2bba78"/>
+    <text x="634" y="641" fill="#fff" font-weight="800">heated floor</text>
+    <rect x="720" y="626" width="82" height="22" rx="11" fill="#fff" stroke="#c6dad4"/>
+    <text x="732" y="641" fill="#52716c" font-weight="800">thermostat</text>
+    <text x="622" y="660">Mixer work mode</text>
+  </g>
+
+  <!-- Diagnostics grid (clickable for history) -->
+  <g>
+    <rect x="76" y="690" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="84" y="703" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="116" y="714" fill="#1d3c38" font-size="15" font-weight="800">47%</text>
+    <text x="116" y="728" fill="#5c746f" font-size="11" font-weight="700">Fan output</text>
+
+    <rect x="342" y="690" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="350" y="703" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="382" y="714" fill="#1d3c38" font-size="15" font-weight="800">134°C</text>
+    <text x="382" y="728" fill="#5c746f" font-size="11" font-weight="700">Flue temp</text>
+
+    <rect x="608" y="690" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="616" y="703" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="648" y="714" fill="#1d3c38" font-size="15" font-weight="800">31°C</text>
+    <text x="648" y="728" fill="#5c746f" font-size="11" font-weight="700">Feeder temp</text>
+
+    <rect x="874" y="690" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="882" y="703" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="914" y="714" fill="#1d3c38" font-size="15" font-weight="800">8%</text>
+    <text x="914" y="728" fill="#5c746f" font-size="11" font-weight="700">O₂ level</text>
+
+    <rect x="76" y="750" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="84" y="763" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="116" y="774" fill="#1d3c38" font-size="15" font-weight="800">Off</text>
+    <text x="116" y="788" fill="#5c746f" font-size="11" font-weight="700">Circulation pump</text>
+
+    <rect x="342" y="750" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="350" y="763" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="382" y="774" fill="#1d3c38" font-size="15" font-weight="800">Off</text>
+    <text x="382" y="788" fill="#5c746f" font-size="11" font-weight="700">Lighter</text>
+
+    <rect x="608" y="750" width="250" height="50" rx="6" fill="#fff" stroke="#d6e4df" stroke-width="1.5"/>
+    <rect x="616" y="763" width="24" height="24" rx="5" fill="#e1efeb"/>
+    <text x="648" y="774" fill="#1d3c38" font-size="15" font-weight="800">Winter / Thermostat</text>
+    <text x="648" y="788" fill="#5c746f" font-size="11" font-weight="700">Modes</text>
+  </g>
 </svg>
