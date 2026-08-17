@@ -94,7 +94,8 @@ entities:
 ## Development
 
 - Source: `src/` (TypeScript)
-- Built artifact committed for HACS: `dist/ecomax810p-diagram-card.js`
-- Build tooling is included (`rollup.config.mjs`), but Home Assistant only needs the `dist/` file.
+- Built artifact committed for HACS: `ecomax810p-diagram-card.js`
+- Run `npm install`, `npm run check`, and `npm run build` before submitting a change. Commit the regenerated root bundle with source changes.
+- Build tooling is included (`rollup.config.mjs`), but Home Assistant only needs the root card file.
 
 

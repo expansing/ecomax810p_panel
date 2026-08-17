@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible problem with the card.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please remove entity IDs, URLs, and other private Home Assistant details before submitting.
+  - type: input
+    id: card-version
+    attributes:
+      label: Card version
+      description: The HACS release tag or commit SHA.
+    validations:
+      required: true
+  - type: input
+    id: home-assistant-version
+    attributes:
+      label: Home Assistant version
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Card configuration
+      description: Paste a minimal YAML configuration with sensitive values removed.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add the card with ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Browser console errors
+      description: Include relevant browser console errors, if any.
+      render: text

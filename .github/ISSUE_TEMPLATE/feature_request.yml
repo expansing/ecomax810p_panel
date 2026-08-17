@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest an improvement to the ecoMAX810P Diagram Card.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the Home Assistant or boiler-monitoring workflow that needs improvement.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe what the card should do and the entities or configuration it would need.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
