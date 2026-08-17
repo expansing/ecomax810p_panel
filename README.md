@@ -90,5 +90,16 @@ The card automatically follows the active Home Assistant theme (light/dark).
 - Built artifact committed for HACS: `ecomax810p-diagram-card.js`
 - Run `npm install`, `npm run check`, and `npm run build` before submitting a change. Commit the regenerated root bundle with source changes.
 - Build tooling is included (`rollup.config.mjs`), but Home Assistant only needs the root card file.
+- The card version (visible in the browser console and card metadata) is injected at build time from the `version` field in `package.json` — there is no separate version to edit by hand.
+
+## Releases
+
+Releases are fully automated from `package.json`:
+
+1. Bump the `version` field in `package.json` and merge to `main`.
+2. The `Release` workflow reads that version, and if a `vX.Y.Z` tag for it doesn't already exist yet, it builds the card, creates the tag, and publishes a GitHub release with the built `ecomax810p-diagram-card.js` attached.
+3. If the version on `main` was already released, the workflow is a no-op — pushing to `main` without bumping the version does not create duplicate releases.
+
+No manual tagging or manual release-triggering is required.
 
 

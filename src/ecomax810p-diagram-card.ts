@@ -3,6 +3,15 @@ import { assertConfig, type EcoMaxDiagramCardConfig } from "./config";
 import { computeValues, deriveStatus } from "./svg";
 import { renderSystemDiagram } from "./system-diagram";
 
+// Replaced with the package.json version at build time by rollup.config.mjs.
+const CARD_VERSION = "__CARD_VERSION__";
+
+console.info(
+  `%c ECOMAX810P-DIAGRAM-CARD %c v${CARD_VERSION} `,
+  "color:#fff;background:#0d6b74;font-weight:700;border-radius:3px 0 0 3px;padding:2px 0 2px 6px;",
+  "color:#0d6b74;background:#e1efeb;font-weight:700;border-radius:0 3px 3px 0;padding:2px 6px 2px 0;"
+);
+
 declare global {
   interface Window {
     customCards?: Array<Record<string, unknown>>;
@@ -304,7 +313,8 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type: "ecomax810p-diagram-card",
   name: "ecoMAX810P Diagram Card",
-  description: "Boiler, heating circuit, and domestic hot water operational overview"
+  description: "Boiler, heating circuit, and domestic hot water operational overview",
+  version: CARD_VERSION
 });
 
 if (!customElements.get("ecomax810p-diagram-card")) {
