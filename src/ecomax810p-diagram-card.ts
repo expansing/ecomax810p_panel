@@ -233,7 +233,6 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .outsideReading text{fill:#41665e;font-size:11px;font-weight:800;letter-spacing:0}
   .systemPipe{fill:none;stroke:#d3dfdc;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
   .systemPipe.is-active.systemPipe--hot{stroke:#d96d4f}.systemPipe.is-active.systemPipe--return{stroke:#4f99a7}
-  .flowJunction{fill:#d3dfdc}.flowJunction.is-active{fill:#2bba78}
   .systemNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}
   .systemNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.systemNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .nodeIcon path{fill:#3f8f7e}
@@ -241,7 +240,12 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .systemNode--dhw .nodeIcon path,.compactNode--dhw .nodeIcon path{fill:#3f88a3}
   .nodeKicker{fill:#607b74;font-size:11px;font-weight:800;letter-spacing:0}.nodeValue{fill:#173d39;font-size:39px;font-weight:800}.nodeValue--medium{font-size:31px}
   .nodeTarget{fill:#56706b;font-size:11px;font-weight:800}.nodeCaption{fill:#52716c;font-size:11px;font-weight:800}.nodeLabel{fill:#68817c;font-size:10px;font-weight:800}.nodeDetail{fill:#234640;font-size:19px;font-weight:800}.nodeRule{stroke:#d8e5e1;stroke-width:1}
-  .nodeIndicator{fill:#b8c8c3}.nodeIndicator.is-active{fill:#2bba78}
+  .pumpGlyph .pumpRing{fill:none;stroke:transparent}
+  .pumpGlyph.is-active .pumpRing{stroke:rgba(43,186,120,.3);stroke-width:3}
+  .pumpGlyph .pumpBody{fill:#eef3f1;stroke:#c6dad4;stroke-width:1.5}
+  .pumpGlyph.is-active .pumpBody{fill:#e4f6ec;stroke:#2bba78}
+  .pumpGlyph .pumpBlade{fill:#aabcb8}
+  .pumpGlyph.is-active .pumpBlade{fill:#1f9a5f}
   .compactNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}.compactNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.compactNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round;stroke:#d3dfdc}.compactPipe.is-active{stroke:#d96d4f}
 
@@ -265,10 +269,11 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .cardShell--dark .overviewState--alert{background:#4a2824;color:#ffb1a3}
   .cardShell--dark .overviewState--unknown{background:#24312d;color:#8fa39d}
   .cardShell--dark .systemSurface{fill:#13211e;stroke:#2e4942}.cardShell--dark .systemGrid{color:#75988f}.cardShell--dark .outsideReading rect{fill:#20352f;stroke:#3d5d55}.cardShell--dark .outsideReading text{fill:#bad9d0}
-  .cardShell--dark .systemPipe{stroke:#35514a}.cardShell--dark .systemPipe.is-active.systemPipe--hot,.cardShell--dark .compactPipe.is-active{stroke:#eb8062}.cardShell--dark .systemPipe.is-active.systemPipe--return{stroke:#63adba}.cardShell--dark .flowJunction{fill:#35514a}
+  .cardShell--dark .systemPipe{stroke:#35514a}.cardShell--dark .systemPipe.is-active.systemPipe--hot,.cardShell--dark .compactPipe.is-active{stroke:#eb8062}.cardShell--dark .systemPipe.is-active.systemPipe--return{stroke:#63adba}
   .cardShell--dark .systemNode rect,.cardShell--dark .compactNode rect{fill:#1d302b;stroke:#38554e}.cardShell--dark .systemNode--circuit rect,.cardShell--dark .compactNode--circuit rect{fill:#332d23;stroke:#665537}.cardShell--dark .systemNode--dhw rect,.cardShell--dark .compactNode--dhw rect{fill:#1a3034;stroke:#365c64}
   .cardShell--dark .nodeIcon path{fill:#7fd0b8}.cardShell--dark .systemNode--circuit .nodeIcon path,.cardShell--dark .compactNode--circuit .nodeIcon path{fill:#e0b463}.cardShell--dark .systemNode--dhw .nodeIcon path,.cardShell--dark .compactNode--dhw .nodeIcon path{fill:#7fc4dd}
   .cardShell--dark .nodeKicker,.cardShell--dark .nodeTarget,.cardShell--dark .nodeCaption,.cardShell--dark .nodeLabel{fill:#aac4bd}.cardShell--dark .nodeValue,.cardShell--dark .compactValue,.cardShell--dark .nodeDetail{fill:#f1faf6}.cardShell--dark .nodeRule{stroke:#38554e}.cardShell--dark .compactPipe{stroke:#35514a}
+  .cardShell--dark .pumpGlyph .pumpBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#173d2c;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#5c7770}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
   .cardShell--dark .stats{background:#14231f}.cardShell--dark .tile{background:#1d302b;border-color:#38554e}.cardShell--dark .tileIcon{background:#29443d}.cardShell--dark .tileIcon svg{fill:#9de1ca}.cardShell--dark .tileValue{color:#f0f8f5}.cardShell--dark .tileLabel{color:#acc4bd}.cardShell--dark .tile--active{border-color:#478467;box-shadow:inset 3px 0 #42c985}.cardShell--dark .tile--alert{border-color:#aa5e53;box-shadow:inset 3px 0 #e57866}.cardShell--dark .tile--spin .tileIcon{background:#4a3823}.cardShell--dark .tile--spin .tileIcon svg{fill:#ffc875}
 
   :host([data-narrow]) .overview{min-height:76px;padding:14px 16px;gap:10px}

@@ -24,6 +24,15 @@ function nodeIcon(kind: keyof typeof NODE_ICON_PATHS, x: number, y: number, scal
   return `<g class="nodeIcon" transform="translate(${x} ${y}) scale(${scale})"><path d="${NODE_ICON_PATHS[kind]}"/></g>`;
 }
 
+function pumpGlyph(cx: number, cy: number, active: boolean, r = 9): string {
+  return `
+  <g class="pumpGlyph ${active ? "is-active" : ""}" transform="translate(${cx} ${cy})">
+    <circle class="pumpRing" r="${r + 3}"/>
+    <circle class="pumpBody" r="${r}"/>
+    <path class="pumpBlade" d="M${(-r * 0.35).toFixed(1)} ${(-r * 0.55).toFixed(1)} L${(r * 0.55).toFixed(1)} 0 L${(-r * 0.35).toFixed(1)} ${(r * 0.55).toFixed(1)} Z"/>
+  </g>`;
+}
+
 export function renderSystemDiagram(values: DiagramValues, compact = false): string {
   if (compact) return renderCompactSystemDiagram(values);
 
@@ -45,12 +54,10 @@ export function renderSystemDiagram(values: DiagramValues, compact = false): str
     <text text-anchor="middle" dominant-baseline="central">OUTSIDE ${esc(values.outside)}</text>
   </g>
 
-  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M286 185 H350 V112 H412"/>
-  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M412 174 H350 V304 H286"/>
-  <path class="systemPipe systemPipe--hot ${dhwFlow ? "is-active" : ""}" d="M286 214 H626 V242 H680"/>
-  <path class="systemPipe systemPipe--return ${dhwFlow ? "is-active" : ""}" d="M680 304 H626 V334 H286"/>
-  <circle class="flowJunction ${hotFlow ? "is-active" : ""}" cx="350" cy="185" r="7"/>
-  <circle class="flowJunction ${dhwFlow ? "is-active" : ""}" cx="626" cy="214" r="7"/>
+  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M286 118 H412"/>
+  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M412 150 H286"/>
+  <path class="systemPipe systemPipe--hot ${dhwFlow ? "is-active" : ""}" d="M286 250 H412"/>
+  <path class="systemPipe systemPipe--return ${dhwFlow ? "is-active" : ""}" d="M412 282 H286"/>
 
   <g class="systemNode systemNode--boiler" transform="translate(52 100)">
     <rect width="234" height="230" rx="8"/>
@@ -64,27 +71,27 @@ export function renderSystemDiagram(values: DiagramValues, compact = false): str
     <text class="nodeLabel" x="120" y="154">FUEL</text>
     <text class="nodeDetail" x="120" y="179">${esc(values.fuelLevel)}</text>
     <text class="nodeCaption" x="20" y="211">HEATING PUMP · ${esc(stateLabel(values.heatingPump))}</text>
-    <circle class="nodeIndicator ${values.heatingPump ? "is-active" : ""}" cx="207" cy="29" r="6"/>
+    ${pumpGlyph(207, 29, values.heatingPump)}
   </g>
 
-  <g class="systemNode systemNode--circuit" transform="translate(412 66)">
-    <rect width="224" height="116" rx="8"/>
+  <g class="systemNode systemNode--circuit" transform="translate(412 60)">
+    <rect width="228" height="112" rx="8"/>
     ${nodeIcon("radiator", 20, 16, 0.6)}
     <text class="nodeKicker" x="44" y="31">HEATING CIRCUIT</text>
-    <text class="nodeValue nodeValue--medium" x="20" y="74">${esc(values.mixerNow)}</text>
-    <text class="nodeTarget" x="106" y="74">TARGET ${esc(values.mixerTarget)}</text>
-    <text class="nodeCaption" x="20" y="98">${esc(stateLabel(values.mixerPump))} · ${esc(values.mixerMode)}</text>
-    <circle class="nodeIndicator ${values.mixerPump ? "is-active" : ""}" cx="196" cy="29" r="6"/>
+    <text class="nodeValue nodeValue--medium" x="20" y="70">${esc(values.mixerNow)}</text>
+    <text class="nodeTarget" x="106" y="70">TARGET ${esc(values.mixerTarget)}</text>
+    <text class="nodeCaption" x="20" y="94">${esc(stateLabel(values.mixerPump))} · ${esc(values.mixerMode)}</text>
+    ${pumpGlyph(200, 29, values.mixerPump)}
   </g>
 
-  <g class="systemNode systemNode--dhw" transform="translate(680 216)">
-    <rect width="228" height="116" rx="8"/>
+  <g class="systemNode systemNode--dhw" transform="translate(412 196)">
+    <rect width="228" height="112" rx="8"/>
     ${nodeIcon("droplet", 20, 16, 0.6)}
     <text class="nodeKicker" x="44" y="31">DOMESTIC HOT WATER</text>
-    <text class="nodeValue nodeValue--medium" x="20" y="74">${esc(values.dhwNow)}</text>
-    <text class="nodeTarget" x="106" y="74">TARGET ${esc(values.dhwTarget)}</text>
-    <text class="nodeCaption" x="20" y="98">${esc(stateLabel(values.dhwPump))} · ${esc(values.waterHeaterMode)}</text>
-    <circle class="nodeIndicator ${values.dhwPump ? "is-active" : ""}" cx="202" cy="29" r="6"/>
+    <text class="nodeValue nodeValue--medium" x="20" y="70">${esc(values.dhwNow)}</text>
+    <text class="nodeTarget" x="106" y="70">TARGET ${esc(values.dhwTarget)}</text>
+    <text class="nodeCaption" x="20" y="94">${esc(stateLabel(values.dhwPump))} · ${esc(values.waterHeaterMode)}</text>
+    ${pumpGlyph(200, 29, values.dhwPump)}
   </g>
 </svg>`.trim();
 }
@@ -105,7 +112,7 @@ function renderCompactSystemDiagram(values: DiagramValues): string {
     <text class="compactValue" x="16" y="65">${esc(values.boilerNow)}</text>
     <text class="nodeTarget" x="116" y="65">SETPOINT ${esc(values.boilerTarget)}</text>
     <text class="nodeCaption" x="16" y="95">${esc(values.boilerLoad)} OUTPUT · ${esc(values.fuelLevel)} FUEL · ${esc(stateLabel(values.heatingPump))}</text>
-    <circle class="nodeIndicator ${values.heatingPump ? "is-active" : ""}" cx="308" cy="24" r="5"/>
+    ${pumpGlyph(308, 24, values.heatingPump, 5)}
   </g>
   <path class="compactPipe systemPipe--hot ${values.mixerPump ? "is-active" : ""}" d="M97 164 V184"/>
   <path class="compactPipe systemPipe--hot ${values.dhwPump ? "is-active" : ""}" d="M263 164 V184"/>
@@ -116,7 +123,7 @@ function renderCompactSystemDiagram(values: DiagramValues): string {
     <text class="compactValue" x="15" y="64">${esc(values.mixerNow)}</text>
     <text class="nodeTarget" x="15" y="84">TARGET ${esc(values.mixerTarget)}</text>
     <text class="nodeCaption" x="15" y="108">${esc(stateLabel(values.mixerPump))}</text>
-    <circle class="nodeIndicator ${values.mixerPump ? "is-active" : ""}" cx="138" cy="24" r="5"/>
+    ${pumpGlyph(138, 24, values.mixerPump, 5)}
   </g>
   <g class="compactNode compactNode--dhw" transform="translate(186 184)">
     <rect width="160" height="126" rx="8"/>
@@ -125,7 +132,7 @@ function renderCompactSystemDiagram(values: DiagramValues): string {
     <text class="compactValue" x="15" y="64">${esc(values.dhwNow)}</text>
     <text class="nodeTarget" x="15" y="84">TARGET ${esc(values.dhwTarget)}</text>
     <text class="nodeCaption" x="15" y="108">${esc(stateLabel(values.dhwPump))}</text>
-    <circle class="nodeIndicator ${values.dhwPump ? "is-active" : ""}" cx="138" cy="24" r="5"/>
+    ${pumpGlyph(138, 24, values.dhwPump, 5)}
   </g>
 </svg>`.trim();
 }
