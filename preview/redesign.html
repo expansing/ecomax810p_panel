@@ -38,6 +38,18 @@
       .heater-bolt { fill: #aabcb8; }
       .heater-glyph.active .heater-bolt { fill: #b8720f; }
       .compact-system { display: none; }
+      .controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 18px; background: #edf4f2; border-top: 1px solid #d6e4df; }
+      .ctrlTile { border-color: #cfe3dd; }
+      .ctrlTile--wide { grid-column: span 2; }
+      .ctrlSwitch { position: relative; width: 38px; height: 22px; border-radius: 999px; border: 1px solid #c6dad4; background: #dbe6e2; cursor: pointer; padding: 0; }
+      .ctrlSwitchKnob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+      .ctrlSwitch.is-on { background: #2bba78; border-color: #2bba78; }
+      .ctrlSwitch.is-on .ctrlSwitchKnob { transform: translateX(16px); }
+      .ctrlInlineStepper { display: flex; align-items: center; gap: 6px; }
+      .ctrlStepBtn { width: 22px; height: 22px; border-radius: 6px; border: 1px solid #c6dad4; background: #fff; color: #234640; font-weight: 800; font-size: 14px; cursor: pointer; }
+      .ctrlChips { display: flex; flex-wrap: wrap; gap: 6px; }
+      .ctrlChip { padding: 5px 10px; border-radius: 999px; border: 1px solid #c6dad4; background: #fff; color: #52716c; font-weight: 800; font-size: 11px; cursor: pointer; text-transform: capitalize; }
+      .ctrlChip.is-active { background: #2bba78; border-color: #2bba78; color: #fff; }
       .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 18px 20px; }
       .metric { min-height: 66px; display: grid; grid-template-columns: 30px 1fr; gap: 9px; align-items: center; padding: 9px 10px; border: 1px solid #d6e4df; border-radius: 6px; background: #fff; }
       .metric > div:first-child { width: 30px; height: 30px; border-radius: 5px; background: #e1efeb; }
@@ -50,6 +62,12 @@
       body[data-theme="dark"] .overview { border-color: #2d4943; background: #192b27; } body[data-theme="dark"] h1, body[data-theme="dark"] h2 { color: #f0f8f5; }
       body[data-theme="dark"] .eyebrow, body[data-theme="dark"] .serving { color: #9cb8b0; }
       body[data-theme="dark"] .state.active { background: #173d2c; color: #8de0ac; }
+      body[data-theme="dark"] .controls { background: #14231f; border-color: #38554e; }
+      body[data-theme="dark"] .ctrlSwitch { background: #1d302b; border-color: #38554e; }
+      body[data-theme="dark"] .ctrlSwitch.is-on { background: #2bba78; border-color: #2bba78; }
+      body[data-theme="dark"] .ctrlStepBtn { background: #1d302b; border-color: #38554e; color: #f1faf6; }
+      body[data-theme="dark"] .ctrlChip { background: #1d302b; border-color: #38554e; color: #aac4bd; }
+      body[data-theme="dark"] .ctrlChip.is-active { background: #2bba78; border-color: #2bba78; color: #0d2118; }
       body[data-theme="dark"] .metric { border-color: #38554e; background: #1d302b; } body[data-theme="dark"] .metric.active { border-color: #478467; box-shadow: inset 3px 0 #42c985; }
       body[data-theme="dark"] .metric > div:first-child { background: #29443d; } body[data-theme="dark"] .value { color: #f0f8f5; } body[data-theme="dark"] .metric .label { color: #acc4bd; }
       body[data-theme="dark"] .full-system > rect:first-of-type, body[data-theme="dark"] .compact-system > rect:first-of-type { fill: #13211e; stroke: #2e4942; }
@@ -71,6 +89,8 @@
         .state { padding: 7px 9px; font-size: 12px; } .diagram { padding: 12px 12px 2px; }
         .full-system { display: none; } .compact-system { display: block; }
         .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; padding: 10px 12px 14px; }
+        .controls { grid-template-columns: 1fr; gap: 7px; padding: 10px 12px; }
+        .ctrlTile--wide { grid-column: auto; }
         .metric { min-height: 58px; padding: 8px; }
       }
     </style>
@@ -104,6 +124,50 @@
             <g class="node--circuit" transform="translate(14 184)"><rect width="160" height="126" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HEATING</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">39°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 42°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">ACTIVE</text><g class="pump-glyph active" transform="translate(138 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
             <g class="node--dhw" transform="translate(186 184)"><rect width="160" height="126" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">48°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 50°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">IDLE</text><g class="pump-glyph" transform="translate(138 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g><g class="heater-glyph active" transform="translate(114 24) scale(0.75)"><circle r="12" class="heater-ring"/><circle r="9" class="heater-body"/><path d="M1.8 -7.2 -4.5 0.9 -0.5 0.9 -1.8 7.2 4.5 -0.9 0.5 -0.9 Z" class="heater-bolt"/></g></g>
           </svg>
+        </div>
+        <div class="controls">
+          <div class="metric ctrlTile">
+            <div class="ctrlIconBox"></div>
+            <div>
+              <button class="ctrlSwitch is-on"><span class="ctrlSwitchKnob"></span></button>
+              <div class="label">Boiler power</div>
+            </div>
+          </div>
+          <div class="metric ctrlTile">
+            <div class="ctrlIconBox"></div>
+            <div>
+              <div class="ctrlInlineStepper"><button class="ctrlStepBtn">&minus;</button><span class="value">75°C</span><button class="ctrlStepBtn">+</button></div>
+              <div class="label">Boiler target</div>
+            </div>
+          </div>
+          <div class="metric ctrlTile">
+            <div class="ctrlIconBox"></div>
+            <div>
+              <div class="ctrlInlineStepper"><button class="ctrlStepBtn">&minus;</button><span class="value">42°C</span><button class="ctrlStepBtn">+</button></div>
+              <div class="label">Heating circuit target</div>
+            </div>
+          </div>
+          <div class="metric ctrlTile">
+            <div class="ctrlIconBox"></div>
+            <div>
+              <div class="ctrlInlineStepper"><button class="ctrlStepBtn">&minus;</button><span class="value">50°C</span><button class="ctrlStepBtn">+</button></div>
+              <div class="label">DHW target</div>
+            </div>
+          </div>
+          <div class="metric ctrlTile ctrlTile--wide">
+            <div class="ctrlIconBox"></div>
+            <div>
+              <div class="ctrlChips"><button class="ctrlChip is-active">winter</button><button class="ctrlChip">summer</button></div>
+              <div class="label">Summer mode</div>
+            </div>
+          </div>
+          <div class="metric ctrlTile ctrlTile--wide">
+            <div class="ctrlIconBox"></div>
+            <div>
+              <div class="ctrlChips"><button class="ctrlChip is-active">heated floor</button><button class="ctrlChip">thermostat</button></div>
+              <div class="label">Mixer work mode</div>
+            </div>
+          </div>
         </div>
         <div class="stats">
           <div class="metric"><div></div><div><div class="value">47%</div><div class="label">Fan output</div></div></div>

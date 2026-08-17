@@ -71,6 +71,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       breakpoint: 700,
       theme: "auto",
       show_diagnostics: true,
+      show_controls: true,
       entities: {}
     };
   }
@@ -82,6 +83,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       breakpoint: 700,
       theme: "auto",
       show_diagnostics: true,
+      show_controls: true,
       ...config
     };
     this._render();
@@ -137,7 +139,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       return;
     }
 
-    const { title, entities, theme, show_diagnostics, extra_tiles } = this._config;
+    const { title, entities, theme, show_diagnostics, show_controls, extra_tiles } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
@@ -148,6 +150,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const isDark = theme === "dark" || (theme !== "light" && this._hass.themes?.darkMode === true);
     const wrapClass = ["cardShell", isDark ? "cardShell--dark" : ""].filter(Boolean).join(" ");
     const showDiagnostics = show_diagnostics !== false;
+    const hass = this._hass;
 
     const tile = (label: string, value: string, icon: string, className = ""): string => `
       <div class="tile ${className}">
@@ -164,6 +167,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const iconFan = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 2c0 1.6-1.8 2.8-4.5 2.8-.7 0-1.4-.1-2.1-.2l.4.7c1.3 2.3 1.1 4.5-.3 5.3-1.4.8-3.4-.3-4.7-2.6-.3-.6-.6-1.2-.8-1.9l-.4.7C6.4 19.1 4.4 20.2 3 19.4c-1.4-.8-1.6-3-.3-5.3.3-.6.7-1.1 1.1-1.6H3.1C.8 12.5-1 11.3-1 9.7S.8 6.9 3.5 6.9c.7 0 1.4.1 2.1.2l-.4-.7C3.9 4.1 4.1 1.9 5.5 1.1c1.4-.8 3.4.3 4.7 2.6.3.6.6 1.2.8 1.9l.4-.7C12.6 3.4 14.6 2.3 16 3.1c1.4.8 1.6 3 .3 5.3-.3.6-.7 1.1-1.1 1.6h.7c2.3 0 4.1 1.2 4.1 2Z"/></svg>`;
     const iconPump = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 1 8 8 8 8 0 0 1-8-8Zm8-4 6 4-6 4V8Z"/></svg>`;
     const iconAlert = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2Zm1 14h-2v-2h2v2Zm0-4h-2V8h2v4Z"/></svg>`;
+    const iconPower = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3h-2v10h2V3Zm4.83 2.17-1.42 1.42A6 6 0 1 1 7.6 6.58L6.17 5.17A8 8 0 1 0 17.83 5.17Z"/></svg>`;
+    const iconTune = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h12V4H3v2Zm16 0h2V4h-2v2ZM3 20h6v-2H3v2Zm10 0h8v-2h-8v2ZM3 13h2v-2H3v2Zm6 0h12v-2H9v2Z"/></svg>`;
 
     const iconByKey: Record<string, string> = {
       thermo: iconThermo,
@@ -200,6 +205,96 @@ export class EcoMax810pDiagramCard extends HTMLElement {
             .join("")
         : "";
 
+    const controlToggleTile = (label: string, entityId?: string): string => {
+      if (!entityId) return "";
+      const ent = hass.states[entityId];
+      if (!ent) return "";
+      const isOn = ent.state === "on";
+      return `
+      <div class="tile ctrlTile ${isOn ? "tile--active" : ""}">
+        <div class="tileIcon">${iconPower}</div>
+        <div class="tileText">
+          <button class="ctrlSwitch ${isOn ? "is-on" : ""}" data-ctrl-domain="switch" data-ctrl-service="${isOn ? "turn_off" : "turn_on"}" data-ctrl-entity="${esc(entityId)}" aria-label="${esc(label)}" aria-pressed="${isOn}"><span class="ctrlSwitchKnob"></span></button>
+          <div class="tileLabel">${esc(label)}</div>
+        </div>
+      </div>`;
+    };
+
+    const controlStepperTile = (label: string, entityId: string | undefined, domain: "number" | "water_heater"): string => {
+      if (!entityId) return "";
+      const ent = hass.states[entityId];
+      if (!ent) return "";
+      const attrs = ent.attributes as Record<string, unknown>;
+      const current = domain === "water_heater" ? Number(attrs.temperature) : Number(ent.state);
+      const min = Number(attrs.min ?? attrs.min_temp ?? 0);
+      const max = Number(attrs.max ?? attrs.max_temp ?? 100);
+      const step = Number(attrs.step ?? attrs.target_temp_step ?? 1) || 1;
+      const service = domain === "water_heater" ? "set_temperature" : "set_value";
+      const field = domain === "water_heater" ? "temperature" : "value";
+      const stepBtn = (delta: number, glyph: string): string =>
+        `<button class="ctrlStepBtn" data-ctrl-domain="${domain}" data-ctrl-service="${service}" data-ctrl-entity="${esc(entityId)}" data-ctrl-field="${field}" data-ctrl-delta="${delta}" data-ctrl-min="${min}" data-ctrl-max="${max}" aria-label="${glyph === "−" ? "Decrease" : "Increase"} ${esc(label)}">${glyph}</button>`;
+      return `
+      <div class="tile ctrlTile">
+        <div class="tileIcon">${iconThermo}</div>
+        <div class="tileText">
+          <div class="ctrlInlineStepper">
+            ${stepBtn(-step, "−")}
+            <span class="tileValue">${Number.isFinite(current) ? `${Math.round(current)}°C` : "---"}</span>
+            ${stepBtn(step, "+")}
+          </div>
+          <div class="tileLabel">${esc(label)}</div>
+        </div>
+      </div>`;
+    };
+
+    const controlModeTile = (label: string, entityId?: string): string => {
+      if (!entityId) return "";
+      const ent = hass.states[entityId];
+      if (!ent) return "";
+      const options = (ent.attributes as Record<string, unknown>).options;
+      if (!Array.isArray(options) || !options.length) return "";
+      const current = ent.state;
+      return `
+      <div class="tile ctrlTile ctrlTile--wide">
+        <div class="tileIcon">${iconTune}</div>
+        <div class="tileText">
+          <div class="ctrlChips">
+            ${options
+              .map(
+                (opt) =>
+                  `<button class="ctrlChip ${opt === current ? "is-active" : ""}" data-ctrl-domain="select" data-ctrl-service="select_option" data-ctrl-entity="${esc(entityId)}" data-ctrl-option="${esc(String(opt))}">${esc(String(opt).replaceAll("_", " "))}</button>`
+              )
+              .join("")}
+          </div>
+          <div class="tileLabel">${esc(label)}</div>
+        </div>
+      </div>`;
+    };
+
+    const summerModeTile = controlModeTile("Summer mode", entities.summer_mode);
+    const mixerModeTile = controlModeTile("Mixer work mode", entities.mixer_work_mode);
+
+    const controlTiles = [
+      controlToggleTile("Boiler power", entities.boiler_switch),
+      controlStepperTile("Boiler target", entities.boiler_target_temperature_control, "number"),
+      controlStepperTile("Heating circuit target", entities.mixer_target_temperature_control, "number"),
+      controlStepperTile("DHW target", entities.water_heater, "water_heater"),
+      summerModeTile,
+      mixerModeTile
+    ].filter(Boolean);
+
+    const controlsHtml =
+      show_controls !== false && controlTiles.length ? `<div class="controls">${controlTiles.join("")}</div>` : "";
+
+    // Avoid restating mode info the control tiles above already show and let you change.
+    const modesTile = summerModeTile && mixerModeTile
+      ? ""
+      : summerModeTile
+        ? tile("Mixer work mode", v.mixerMode, iconAlert)
+        : mixerModeTile
+          ? tile("Summer mode", v.summerMode, iconAlert)
+          : tile("Modes", `${v.summerMode} / ${v.mixerMode}`, iconAlert);
+
     const diagnosticsHtml = showDiagnostics
       ? `
   <div class="stats">
@@ -209,7 +304,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     ${tile("O₂ level", v.o2, iconThermo)}
     ${tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "")}
     ${tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "")}
-    ${tile("Modes", `${v.summerMode} / ${v.mixerMode}`, iconAlert)}
+    ${modesTile}
     ${extraTilesHtml}
   </div>
 `
@@ -238,6 +333,19 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .diagramFrame{padding:16px 18px 4px}
   .svg{display:block;width:100%;overflow:visible}
   .svg svg{display:block;width:100%;height:auto}
+
+  .controls{margin:0;padding:14px 18px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#edf4f2;border-top:1px solid #d6e4df}
+  .ctrlTile{border-color:#cfe3dd}
+  .ctrlTile--wide{grid-column:span 2}
+  .ctrlSwitch{position:relative;width:38px;height:22px;border-radius:999px;border:1px solid #c6dad4;background:#dbe6e2;cursor:pointer;padding:0;flex:0 0 auto}
+  .ctrlSwitch .ctrlSwitchKnob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s ease}
+  .ctrlSwitch.is-on{background:#2bba78;border-color:#2bba78}
+  .ctrlSwitch.is-on .ctrlSwitchKnob{transform:translateX(16px)}
+  .ctrlInlineStepper{display:flex;align-items:center;gap:6px}
+  .ctrlStepBtn{width:22px;height:22px;border-radius:6px;border:1px solid #c6dad4;background:#fff;color:#234640;font-weight:800;font-size:14px;line-height:1;cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+  .ctrlChips{display:flex;flex-wrap:wrap;gap:6px}
+  .ctrlChip{padding:5px 10px;border-radius:999px;border:1px solid #c6dad4;background:#fff;color:#52716c;font-weight:800;font-size:11px;cursor:pointer;text-transform:capitalize}
+  .ctrlChip.is-active{background:#2bba78;border-color:#2bba78;color:#fff}
 
   .systemSurface{fill:#f8fbfa;stroke:#d9e7e3;stroke-width:1}
   .systemGrid{fill:url(#systemGrid);color:#527b73}
@@ -294,11 +402,19 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .cardShell--dark .pumpGlyph .pumpBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#173d2c;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#5c7770}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
   .cardShell--dark .heaterGlyph .heaterBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .heaterGlyph.is-active .heaterBody{fill:#3d2f16;stroke:#e0a838}.cardShell--dark .heaterGlyph .heaterBolt{fill:#5c7770}.cardShell--dark .heaterGlyph.is-active .heaterBolt{fill:#f0c05e}.cardShell--dark .heaterGlyph.is-active .heaterRing{stroke:rgba(224,168,56,.35)}
   .cardShell--dark .stats{background:#14231f}.cardShell--dark .tile{background:#1d302b;border-color:#38554e}.cardShell--dark .tileIcon{background:#29443d}.cardShell--dark .tileIcon svg{fill:#9de1ca}.cardShell--dark .tileValue{color:#f0f8f5}.cardShell--dark .tileLabel{color:#acc4bd}.cardShell--dark .tile--active{border-color:#478467;box-shadow:inset 3px 0 #42c985}.cardShell--dark .tile--alert{border-color:#aa5e53;box-shadow:inset 3px 0 #e57866}.cardShell--dark .tile--spin .tileIcon{background:#4a3823}.cardShell--dark .tile--spin .tileIcon svg{fill:#ffc875}
+  .cardShell--dark .controls{background:#14231f;border-color:#38554e}
+  .cardShell--dark .ctrlSwitch{background:#1d302b;border-color:#38554e}
+  .cardShell--dark .ctrlSwitch.is-on{background:#2bba78;border-color:#2bba78}
+  .cardShell--dark .ctrlStepBtn{background:#1d302b;border-color:#38554e;color:#f1faf6}
+  .cardShell--dark .ctrlChip{background:#1d302b;border-color:#38554e;color:#aac4bd}
+  .cardShell--dark .ctrlChip.is-active{background:#2bba78;border-color:#2bba78;color:#0d2118}
 
   :host([data-narrow]) .overview{min-height:76px;padding:14px 16px;gap:10px}
   :host([data-narrow]) .overviewTitle{font-size:19px}
   :host([data-narrow]) .overviewState{padding:7px 9px;font-size:12px}
   :host([data-narrow]) .diagramFrame{padding:12px 12px 2px}
+  :host([data-narrow]) .controls{padding:10px 12px;grid-template-columns:1fr;gap:7px}
+  :host([data-narrow]) .ctrlTile--wide{grid-column:auto}
   :host([data-narrow]) .stats{padding:10px 12px 14px;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   :host([data-narrow]) .tile{min-height:58px;padding:8px}
 </style>
@@ -312,10 +428,51 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       </div>
     </header>
     <div class="diagramFrame"><div class="svg">${svg}</div></div>
+    ${controlsHtml}
     ${diagnosticsHtml}
   </div>
 </ha-card>
     `.trim();
+
+    const ctrlButtons = Array.from(this.shadowRoot.querySelectorAll("[data-ctrl-domain]")) as HTMLElement[];
+    for (const btn of ctrlButtons) {
+      btn.addEventListener("click", () => this._handleControlClick(btn));
+    }
+  }
+
+  private _handleControlClick(btn: HTMLElement): void {
+    const domain = btn.dataset.ctrlDomain;
+    const service = btn.dataset.ctrlService;
+    const entityId = btn.dataset.ctrlEntity;
+    if (!domain || !service || !entityId) return;
+
+    const option = btn.dataset.ctrlOption;
+    if (option != null) {
+      this._callService(domain, service, { entity_id: entityId, option });
+      return;
+    }
+
+    const field = btn.dataset.ctrlField;
+    const deltaAttr = btn.dataset.ctrlDelta;
+    if (field != null && deltaAttr != null) {
+      const ent = this._hass?.states[entityId];
+      const attrs = (ent?.attributes ?? {}) as Record<string, unknown>;
+      const base = domain === "water_heater" ? Number(attrs.temperature) : Number(ent?.state);
+      const delta = Number(deltaAttr);
+      const min = Number(btn.dataset.ctrlMin ?? -Infinity);
+      const max = Number(btn.dataset.ctrlMax ?? Infinity);
+      const next = Math.min(max, Math.max(min, (Number.isFinite(base) ? base : 0) + delta));
+      this._callService(domain, service, { entity_id: entityId, [field]: next });
+      return;
+    }
+
+    this._callService(domain, service, { entity_id: entityId });
+  }
+
+  private _callService(domain: string, service: string, data: Record<string, unknown>): void {
+    this._hass?.callService(domain, service, data)?.catch((err: unknown) => {
+      console.error(`ecomax810p-diagram-card: ${domain}.${service} failed`, err);
+    });
   }
 }
 
@@ -462,8 +619,11 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       ["Fan power", "fan_power"],
       ["Boiler temperature", "boiler_temperature"],
       ["Boiler target temperature", "boiler_target_temperature"],
+      ["Boiler power switch", "boiler_switch"],
+      ["Boiler target temperature control", "boiler_target_temperature_control"],
       ["Mixer temperature", "mixer_temperature"],
       ["Mixer target temperature", "mixer_target_temperature"],
+      ["Mixer target temperature control", "mixer_target_temperature_control"],
       ["DHW temperature", "dhw_temperature"],
       ["DHW target temperature", "dhw_target_temperature"],
       ["DHW electric heater switch", "dhw_electric_heater"],
@@ -524,6 +684,12 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       <select data-key="show_diagnostics">
         <option value="true" ${top.show_diagnostics !== false ? "selected" : ""}>true</option>
         <option value="false" ${top.show_diagnostics === false ? "selected" : ""}>false</option>
+      </select>
+    </label>
+    <label>Show controls
+      <select data-key="show_controls">
+        <option value="true" ${top.show_controls !== false ? "selected" : ""}>true</option>
+        <option value="false" ${top.show_controls === false ? "selected" : ""}>false</option>
       </select>
     </label>
   </div>
@@ -605,7 +771,7 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       el.addEventListener("change", (ev: Event) => {
         const key = (el as any).dataset?.key;
         const raw = (el as any).value;
-        if (key === "show_diagnostics") {
+        if (key === "show_diagnostics" || key === "show_controls") {
           (ev as any).detail = { value: raw === "true" };
         } else {
           (ev as any).detail = { value: raw };
