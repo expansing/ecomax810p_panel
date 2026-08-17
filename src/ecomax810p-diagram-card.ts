@@ -1,6 +1,6 @@
 import type { HassEntity, HomeAssistant } from "./types";
 import { assertConfig, type EcoMaxDiagramCardConfig } from "./config";
-import { computeValues, deriveStatus } from "./svg";
+import { computeValues, deriveStatus, type DiagramValues } from "./svg";
 import { renderSystemDiagram } from "./system-diagram";
 
 // Replaced with the package.json version at build time by rollup.config.mjs.
@@ -58,6 +58,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   private _config?: EcoMaxDiagramCardConfig;
   private _ro?: ResizeObserver;
   private _width = 0;
+  private _prevValues?: DiagramValues;
 
   public static getConfigElement(): HTMLElement {
     return document.createElement("ecomax810p-diagram-card-editor");
@@ -72,6 +73,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       theme: "auto",
       show_diagnostics: true,
       show_controls: true,
+      show_animations: true,
       entities: {}
     };
   }
@@ -84,6 +86,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       theme: "auto",
       show_diagnostics: true,
       show_controls: true,
+      show_animations: true,
       ...config
     };
     this._render();
@@ -132,6 +135,33 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       : false;
   }
 
+  private static readonly FLASHABLE_KEYS: ReadonlyArray<keyof DiagramValues> = [
+    "outside",
+    "boilerNow",
+    "boilerTarget",
+    "mixerNow",
+    "mixerTarget",
+    "dhwNow",
+    "dhwTarget",
+    "boilerLoad",
+    "fuelLevel",
+    "fanPower",
+    "exhaustTemp",
+    "feederTemp",
+    "o2"
+  ];
+
+  /** Values that changed since the previous render, so their display can briefly flash. Empty on first render. */
+  private _changedValueKeys(v: DiagramValues): Set<keyof DiagramValues> {
+    const prev = this._prevValues;
+    const changed = new Set<keyof DiagramValues>();
+    if (!prev) return changed;
+    for (const key of EcoMax810pDiagramCard.FLASHABLE_KEYS) {
+      if (prev[key] !== v[key]) changed.add(key);
+    }
+    return changed;
+  }
+
   private _render(): void {
     if (!this.shadowRoot) return;
     if (!this._config || !this._hass) {
@@ -139,24 +169,26 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       return;
     }
 
-    const { title, entities, theme, show_diagnostics, show_controls, extra_tiles } = this._config;
+    const { title, entities, theme, show_diagnostics, show_controls, show_animations, extra_tiles } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
     const v = computeValues(this._hass, entities);
-    const svg = renderSystemDiagram(v, entities, narrow);
+    const animate = show_animations !== false;
+    const changedKeys = animate ? this._changedValueKeys(v) : new Set<keyof DiagramValues>();
+    const svg = renderSystemDiagram(v, entities, narrow, changedKeys);
     const status = deriveStatus(v);
 
     const isDark = theme === "dark" || (theme !== "light" && this._hass.themes?.darkMode === true);
-    const wrapClass = ["cardShell", isDark ? "cardShell--dark" : ""].filter(Boolean).join(" ");
+    const wrapClass = ["cardShell", isDark ? "cardShell--dark" : "", animate ? "cardShell--animated" : ""].filter(Boolean).join(" ");
     const showDiagnostics = show_diagnostics !== false;
     const hass = this._hass;
 
-    const tile = (label: string, value: string, icon: string, className = "", entityId?: string): string => `
+    const tile = (label: string, value: string, icon: string, className = "", entityId?: string, flash = false): string => `
       <div class="tile ${entityId ? "tile--clickable" : ""} ${className}" ${entityId ? `tabindex="0" role="button" data-entity-link="${esc(entityId)}"` : ""}>
         <div class="tileIcon">${icon}</div>
         <div class="tileText">
-          <div class="tileValue">${esc(value)}</div>
+          <div class="tileValue ${flash ? "valueFlash" : ""}">${esc(value)}</div>
           <div class="tileLabel">${esc(label)}</div>
         </div>
       </div>
@@ -298,10 +330,10 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const diagnosticsHtml = showDiagnostics
       ? `
   <div class="stats">
-    ${tile("Fan output", v.fanPower, iconFan, v.fanRunning ? "tile--spin" : "", entities.fan_power)}
-    ${tile("Flue temp", v.exhaustTemp, iconThermo, v.exhaustFanRunning ? "tile--active" : "", entities.exhaust_temperature)}
-    ${tile("Feeder temp", v.feederTemp, iconThermo, v.feederRunning ? "tile--active" : "", entities.feeder_temperature)}
-    ${tile("O₂ level", v.o2, iconThermo, "", entities.oxygen_level)}
+    ${tile("Fan output", v.fanPower, iconFan, v.fanRunning ? "tile--spin" : "", entities.fan_power, changedKeys.has("fanPower"))}
+    ${tile("Flue temp", v.exhaustTemp, iconThermo, v.exhaustFanRunning ? "tile--active" : "", entities.exhaust_temperature, changedKeys.has("exhaustTemp"))}
+    ${tile("Feeder temp", v.feederTemp, iconThermo, v.feederRunning ? "tile--active" : "", entities.feeder_temperature, changedKeys.has("feederTemp"))}
+    ${tile("O₂ level", v.o2, iconThermo, "", entities.oxygen_level, changedKeys.has("o2"))}
     ${tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "", entities.circulation_pump_running)}
     ${tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "", entities.lighter_running)}
     ${modesTile}
@@ -374,6 +406,22 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .heaterGlyph.is-active .heaterBolt{fill:#b8720f}
   .compactNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}.compactNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.compactNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round;stroke:#d3dfdc}.compactPipe.is-active{stroke:#d96d4f}
+
+  /* Subtle, opt-in motion (config: show_animations). Off by default in markup unless .cardShell--animated is present. */
+  @keyframes pipeFlow{to{stroke-dashoffset:-48}}
+  @keyframes pumpSpin{to{transform:rotate(360deg)}}
+  @keyframes statePulse{0%,100%{box-shadow:0 0 0 0 rgba(43,186,120,.35)}50%{box-shadow:0 0 0 5px rgba(43,186,120,0)}}
+  @keyframes valueFlash{0%{opacity:.35}100%{opacity:1}}
+  .cardShell--animated .systemPipe.is-active,.cardShell--animated .compactPipe.is-active{stroke-dasharray:14 10;animation:pipeFlow 1s linear infinite}
+  .cardShell--animated .pumpGlyph.is-active .pumpBlade{transform-box:fill-box;transform-origin:center;animation:pumpSpin 1.4s linear infinite}
+  .cardShell--animated .overviewState--active{animation:statePulse 2.2s ease-in-out infinite}
+  .cardShell--animated .valueFlash{animation:valueFlash .6s ease-out}
+  @media (prefers-reduced-motion:reduce){
+    .cardShell--animated .systemPipe.is-active,.cardShell--animated .compactPipe.is-active,
+    .cardShell--animated .pumpGlyph.is-active .pumpBlade,
+    .cardShell--animated .overviewState--active,
+    .cardShell--animated .valueFlash{animation:none}
+  }
 
   .stats{margin:0;padding:10px 14px 14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;background:#edf4f2}
   .tile{min-height:50px;padding:6px 8px;gap:7px;display:flex;align-items:center;background:#fff;border:1px solid #d6e4df;border-radius:6px;box-shadow:none}
@@ -457,6 +505,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
         }
       });
     }
+
+    this._prevValues = v;
   }
 
   private _openMoreInfo(entityId: string): void {
@@ -721,6 +771,12 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
         <option value="false" ${top.show_controls === false ? "selected" : ""}>false</option>
       </select>
     </label>
+    <label>Show animations
+      <select data-key="show_animations">
+        <option value="true" ${top.show_animations !== false ? "selected" : ""}>true</option>
+        <option value="false" ${top.show_animations === false ? "selected" : ""}>false</option>
+      </select>
+    </label>
   </div>
 </div>
 
@@ -800,7 +856,7 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       el.addEventListener("change", (ev: Event) => {
         const key = (el as any).dataset?.key;
         const raw = (el as any).value;
-        if (key === "show_diagnostics" || key === "show_controls") {
+        if (key === "show_diagnostics" || key === "show_controls" || key === "show_animations") {
           (ev as any).detail = { value: raw === "true" };
         } else {
           (ev as any).detail = { value: raw };

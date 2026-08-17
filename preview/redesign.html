@@ -38,6 +38,16 @@
       .heater-bolt { fill: #aabcb8; }
       .heater-glyph.active .heater-bolt { fill: #b8720f; }
       .compact-system { display: none; }
+      /* Preview of the opt-in show_animations feature (real card gates this on .cardShell--animated). */
+      @keyframes pumpSpin { to { transform: rotate(360deg); } }
+      @keyframes statePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(43, 186, 120, .35); } 50% { box-shadow: 0 0 0 5px rgba(43, 186, 120, 0); } }
+      @keyframes pipeFlow { to { stroke-dashoffset: -48; } }
+      .pump-glyph.active .pump-blade { transform-box: fill-box; transform-origin: center; animation: pumpSpin 1.4s linear infinite; }
+      .state.active { animation: statePulse 2.2s ease-in-out infinite; }
+      .full-system path[stroke="#d96d4f"], .full-system path[stroke="#4f99a7"] { stroke-dasharray: 14 10; animation: pipeFlow 1s linear infinite; }
+      @media (prefers-reduced-motion: reduce) {
+        .pump-glyph.active .pump-blade, .state.active, .full-system path[stroke="#d96d4f"], .full-system path[stroke="#4f99a7"] { animation: none; }
+      }
       .controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 18px; background: #edf4f2; border-top: 1px solid #d6e4df; }
       .ctrlTile { border-color: #cfe3dd; }
       .ctrlTile--wide { grid-column: span 2; }
