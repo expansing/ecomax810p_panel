@@ -1,6 +1,6 @@
 {
   "name": "ecomax810p-diagram-card",
-  "version": "0.3.1",
+  "version": "0.6.0",
   "description": "Home Assistant Lovelace card for the Plum ecoMAX810P boiler, heating circuit, and domestic hot water system",
   "private": true,
   "type": "module",

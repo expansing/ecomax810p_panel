@@ -33,6 +33,17 @@ function pumpGlyph(cx: number, cy: number, active: boolean, r = 9): string {
   </g>`;
 }
 
+/** Indicator for the external electric heating element (not part of the ecoMAX controller). */
+function heaterGlyph(cx: number, cy: number, active: boolean, r = 9): string {
+  return `
+  <g class="heaterGlyph ${active ? "is-active" : ""}" transform="translate(${cx} ${cy})">
+    <title>Electric heater ${active ? "active" : "idle"}</title>
+    <circle class="heaterRing" r="${r + 3}"/>
+    <circle class="heaterBody" r="${r}"/>
+    <path class="heaterBolt" d="M${(r * 0.2).toFixed(1)} ${(-r * 0.8).toFixed(1)} L${(-r * 0.5).toFixed(1)} ${(r * 0.1).toFixed(1)} L${(-r * 0.05).toFixed(1)} ${(r * 0.1).toFixed(1)} L${(-r * 0.2).toFixed(1)} ${(r * 0.8).toFixed(1)} L${(r * 0.5).toFixed(1)} ${(-r * 0.1).toFixed(1)} L${(r * 0.05).toFixed(1)} ${(-r * 0.1).toFixed(1)} Z"/>
+  </g>`;
+}
+
 export function renderSystemDiagram(values: DiagramValues, compact = false): string {
   if (compact) return renderCompactSystemDiagram(values);
 
@@ -54,10 +65,10 @@ export function renderSystemDiagram(values: DiagramValues, compact = false): str
     <text text-anchor="middle" dominant-baseline="central">OUTSIDE ${esc(values.outside)}</text>
   </g>
 
-  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M286 118 H412"/>
-  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M412 150 H286"/>
-  <path class="systemPipe systemPipe--hot ${dhwFlow ? "is-active" : ""}" d="M286 250 H412"/>
-  <path class="systemPipe systemPipe--return ${dhwFlow ? "is-active" : ""}" d="M412 282 H286"/>
+  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M286 135 H412"/>
+  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M412 170 H286"/>
+  <path class="systemPipe systemPipe--hot ${dhwFlow ? "is-active" : ""}" d="M286 260 H412"/>
+  <path class="systemPipe systemPipe--return ${dhwFlow ? "is-active" : ""}" d="M412 295 H286"/>
 
   <g class="systemNode systemNode--boiler" transform="translate(52 100)">
     <rect width="234" height="230" rx="8"/>
@@ -74,8 +85,8 @@ export function renderSystemDiagram(values: DiagramValues, compact = false): str
     ${pumpGlyph(207, 29, values.heatingPump)}
   </g>
 
-  <g class="systemNode systemNode--circuit" transform="translate(412 60)">
-    <rect width="228" height="112" rx="8"/>
+  <g class="systemNode systemNode--circuit" transform="translate(412 100)">
+    <rect width="228" height="105" rx="8"/>
     ${nodeIcon("radiator", 20, 16, 0.6)}
     <text class="nodeKicker" x="44" y="31">HEATING CIRCUIT</text>
     <text class="nodeValue nodeValue--medium" x="20" y="70">${esc(values.mixerNow)}</text>
@@ -84,14 +95,15 @@ export function renderSystemDiagram(values: DiagramValues, compact = false): str
     ${pumpGlyph(200, 29, values.mixerPump)}
   </g>
 
-  <g class="systemNode systemNode--dhw" transform="translate(412 196)">
-    <rect width="228" height="112" rx="8"/>
+  <g class="systemNode systemNode--dhw" transform="translate(412 225)">
+    <rect width="228" height="105" rx="8"/>
     ${nodeIcon("droplet", 20, 16, 0.6)}
-    <text class="nodeKicker" x="44" y="31">DOMESTIC HOT WATER</text>
+    <text class="nodeKicker" x="44" y="31">HOT WATER</text>
     <text class="nodeValue nodeValue--medium" x="20" y="70">${esc(values.dhwNow)}</text>
     <text class="nodeTarget" x="106" y="70">TARGET ${esc(values.dhwTarget)}</text>
     <text class="nodeCaption" x="20" y="94">${esc(stateLabel(values.dhwPump))} · ${esc(values.waterHeaterMode)}</text>
     ${pumpGlyph(200, 29, values.dhwPump)}
+    ${heaterGlyph(168, 29, values.dhwElectricHeaterOn)}
   </g>
 </svg>`.trim();
 }
@@ -133,6 +145,7 @@ function renderCompactSystemDiagram(values: DiagramValues): string {
     <text class="nodeTarget" x="15" y="84">TARGET ${esc(values.dhwTarget)}</text>
     <text class="nodeCaption" x="15" y="108">${esc(stateLabel(values.dhwPump))}</text>
     ${pumpGlyph(138, 24, values.dhwPump, 5)}
+    ${heaterGlyph(114, 24, values.dhwElectricHeaterOn, 5)}
   </g>
 </svg>`.trim();
 }

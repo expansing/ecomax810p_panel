@@ -1,6 +1,7 @@
 export type EntityMap = {
   state?: string;
   alert?: string;
+  connection_status?: string;
   outside_temperature?: string;
 
   boiler_load?: string;
@@ -15,6 +16,9 @@ export type EntityMap = {
 
   dhw_temperature?: string;
   dhw_target_temperature?: string;
+
+  /** External switch (e.g. a smart plug) for an electric heating element inside the DHW tank, separate from the boiler. */
+  dhw_electric_heater?: string;
 
   exhaust_temperature?: string;
   feeder_temperature?: string;
@@ -50,6 +54,14 @@ export type EcoMaxDiagramCardConfig = {
 
   /** Width breakpoint (px) used when `layout: auto`. Default: 700. */
   breakpoint?: number;
+
+  /**
+   * Card color scheme:
+   * - `auto` (default): follow Home Assistant's active light/dark mode
+   * - `light`: always render the light appearance
+   * - `dark`: always render the dark appearance
+   */
+  theme?: "auto" | "light" | "dark";
 
   /**
    * Show the secondary diagnostics grid (fan output, flue/feeder temperature,

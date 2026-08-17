@@ -69,6 +69,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       title: "ecoMAX810P",
       layout: "auto",
       breakpoint: 700,
+      theme: "auto",
       show_diagnostics: true,
       entities: {}
     };
@@ -79,6 +80,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     this._config = {
       layout: "auto",
       breakpoint: 700,
+      theme: "auto",
       show_diagnostics: true,
       ...config
     };
@@ -135,7 +137,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       return;
     }
 
-    const { title, entities, show_diagnostics, extra_tiles } = this._config;
+    const { title, entities, theme, show_diagnostics, extra_tiles } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
@@ -143,7 +145,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const svg = renderSystemDiagram(v, narrow);
     const status = deriveStatus(v);
 
-    const isDark = this._hass.themes?.darkMode === true;
+    const isDark = theme === "dark" || (theme !== "light" && this._hass.themes?.darkMode === true);
     const wrapClass = ["cardShell", isDark ? "cardShell--dark" : ""].filter(Boolean).join(" ");
     const showDiagnostics = show_diagnostics !== false;
 
@@ -256,6 +258,12 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .pumpGlyph.is-active .pumpBody{fill:#e4f6ec;stroke:#2bba78}
   .pumpGlyph .pumpBlade{fill:#aabcb8}
   .pumpGlyph.is-active .pumpBlade{fill:#1f9a5f}
+  .heaterGlyph .heaterRing{fill:none;stroke:transparent}
+  .heaterGlyph.is-active .heaterRing{stroke:rgba(217,146,26,.3);stroke-width:3}
+  .heaterGlyph .heaterBody{fill:#eef3f1;stroke:#c6dad4;stroke-width:1.5}
+  .heaterGlyph.is-active .heaterBody{fill:#fdf1dc;stroke:#d9921a}
+  .heaterGlyph .heaterBolt{fill:#aabcb8}
+  .heaterGlyph.is-active .heaterBolt{fill:#b8720f}
   .compactNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}.compactNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.compactNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round;stroke:#d3dfdc}.compactPipe.is-active{stroke:#d96d4f}
 
@@ -284,6 +292,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .cardShell--dark .nodeIcon path{fill:#7fd0b8}.cardShell--dark .systemNode--circuit .nodeIcon path,.cardShell--dark .compactNode--circuit .nodeIcon path{fill:#e0b463}.cardShell--dark .systemNode--dhw .nodeIcon path,.cardShell--dark .compactNode--dhw .nodeIcon path{fill:#7fc4dd}
   .cardShell--dark .nodeKicker,.cardShell--dark .nodeTarget,.cardShell--dark .nodeCaption,.cardShell--dark .nodeLabel{fill:#aac4bd}.cardShell--dark .nodeValue,.cardShell--dark .compactValue,.cardShell--dark .nodeDetail{fill:#f1faf6}.cardShell--dark .nodeRule{stroke:#38554e}.cardShell--dark .compactPipe{stroke:#35514a}
   .cardShell--dark .pumpGlyph .pumpBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#173d2c;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#5c7770}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
+  .cardShell--dark .heaterGlyph .heaterBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .heaterGlyph.is-active .heaterBody{fill:#3d2f16;stroke:#e0a838}.cardShell--dark .heaterGlyph .heaterBolt{fill:#5c7770}.cardShell--dark .heaterGlyph.is-active .heaterBolt{fill:#f0c05e}.cardShell--dark .heaterGlyph.is-active .heaterRing{stroke:rgba(224,168,56,.35)}
   .cardShell--dark .stats{background:#14231f}.cardShell--dark .tile{background:#1d302b;border-color:#38554e}.cardShell--dark .tileIcon{background:#29443d}.cardShell--dark .tileIcon svg{fill:#9de1ca}.cardShell--dark .tileValue{color:#f0f8f5}.cardShell--dark .tileLabel{color:#acc4bd}.cardShell--dark .tile--active{border-color:#478467;box-shadow:inset 3px 0 #42c985}.cardShell--dark .tile--alert{border-color:#aa5e53;box-shadow:inset 3px 0 #e57866}.cardShell--dark .tile--spin .tileIcon{background:#4a3823}.cardShell--dark .tile--spin .tileIcon svg{fill:#ffc875}
 
   :host([data-narrow]) .overview{min-height:76px;padding:14px 16px;gap:10px}
@@ -446,6 +455,7 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
     const rows = [
       ["Operation state", "state"],
       ["Alert", "alert"],
+      ["Connection status", "connection_status"],
       ["Outside temperature", "outside_temperature"],
       ["Boiler load", "boiler_load"],
       ["Fuel level", "fuel_level"],
@@ -456,6 +466,7 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       ["Mixer target temperature", "mixer_target_temperature"],
       ["DHW temperature", "dhw_temperature"],
       ["DHW target temperature", "dhw_target_temperature"],
+      ["DHW electric heater switch", "dhw_electric_heater"],
       ["Flue/exhaust temperature", "exhaust_temperature"],
       ["Feeder temperature", "feeder_temperature"],
       ["Oxygen level", "oxygen_level"],
@@ -501,6 +512,13 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
     </label>
     <label>Breakpoint (px)
       <input data-key="breakpoint" type="number" value="${esc(String(top.breakpoint ?? 700))}"/>
+    </label>
+    <label>Theme
+      <select data-key="theme">
+        <option value="auto" ${(top.theme ?? "auto") === "auto" ? "selected" : ""}>auto</option>
+        <option value="light" ${top.theme === "light" ? "selected" : ""}>light</option>
+        <option value="dark" ${top.theme === "dark" ? "selected" : ""}>dark</option>
+      </select>
     </label>
     <label>Show diagnostics
       <select data-key="show_diagnostics">

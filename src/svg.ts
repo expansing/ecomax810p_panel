@@ -46,6 +46,7 @@ export type DiagramValues = {
   mixerMode: string;
   waterHeaterMode: string;
   alertOn: boolean;
+  connectionOk: boolean;
   heatingPump: boolean;
   dhwPump: boolean;
   mixerPump: boolean;
@@ -54,6 +55,7 @@ export type DiagramValues = {
   exhaustFanRunning: boolean;
   feederRunning: boolean;
   lighterRunning: boolean;
+  dhwElectricHeaterOn: boolean;
 };
 
 export function computeValues(hass: HomeAssistant, entities: EntityMap): DiagramValues {
@@ -75,6 +77,8 @@ export function computeValues(hass: HomeAssistant, entities: EntityMap): Diagram
   const summerMode = stateOf(hass, entities.summer_mode) ?? "---";
   const mixerMode = stateOf(hass, entities.mixer_work_mode) ?? "---";
   const waterHeaterMode = stateOf(hass, entities.water_heater) ?? "---";
+  // Unmapped means no connectivity sensor was configured; assume connected.
+  const connectionOk = entities.connection_status ? isOn(hass, entities.connection_status) : true;
 
   return {
     outside,
@@ -95,6 +99,7 @@ export function computeValues(hass: HomeAssistant, entities: EntityMap): Diagram
     mixerMode,
     waterHeaterMode,
     alertOn: isOn(hass, entities.alert),
+    connectionOk,
     heatingPump: isOn(hass, entities.heating_pump_running),
     dhwPump: isOn(hass, entities.dhw_pump_running),
     mixerPump: isOn(hass, entities.mixer_pump_running),
@@ -102,7 +107,8 @@ export function computeValues(hass: HomeAssistant, entities: EntityMap): Diagram
     fanRunning: isOn(hass, entities.fan_running),
     exhaustFanRunning: isOn(hass, entities.exhaust_fan_running),
     feederRunning: isOn(hass, entities.feeder_running),
-    lighterRunning: isOn(hass, entities.lighter_running)
+    lighterRunning: isOn(hass, entities.lighter_running),
+    dhwElectricHeaterOn: isOn(hass, entities.dhw_electric_heater)
   };
 }
 
@@ -125,6 +131,7 @@ export function deriveStatus(v: DiagramValues): SystemStatus {
           ? "Serving domestic hot water"
           : "No active demand";
 
+  if (!v.connectionOk) return { label: "Offline", tone: "unknown", serving: "No data" };
   if (v.alertOn) return { label: "Alarm active", tone: "alert", serving };
 
   const mode = v.opMode.toLowerCase();

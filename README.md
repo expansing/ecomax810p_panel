@@ -1,6 +1,6 @@
 # ecoMAX810P Diagram Card (Home Assistant Lovelace)
 
-A custom Lovelace card that visualizes a **Plum ecoMAX 810P-L Touch** boiler + mixer loop in a single diagram, with **animated flow indicators** driven by Home Assistant entities.
+A custom Lovelace card that visualizes a **Plum ecoMAX 810P-L Touch** boiler, heating circuit, and domestic hot water system in a single status-driven diagram.
 
 ![ecoMAX810P Diagram Card preview](docs/ecomax810p-diagram-card-preview.svg)
 
@@ -30,6 +30,7 @@ type: custom:ecomax810p-diagram-card
 title: ecoMAX810P
 layout: auto
 breakpoint: 700
+theme: auto
 show_diagnostics: true
 extra_tiles:
   - entity: sensor.ecomax_810p_l_touch_connected_modules
@@ -39,6 +40,7 @@ extra_tiles:
 entities:
   state: sensor.ecomax_810p_l_touch_state
   alert: binary_sensor.ecomax_810p_l_touch_alert
+  connection_status: binary_sensor.ecomax_810p_l_touch_connection_status
   outside_temperature: sensor.ecomax_810p_l_touch_outside_temperature
 
   boiler_load: sensor.ecomax_810p_l_touch_boiler_load
@@ -53,6 +55,7 @@ entities:
 
   dhw_temperature: sensor.ecomax_810p_l_touch_water_heater_temperature
   dhw_target_temperature: sensor.ecomax_810p_l_touch_water_heater_target_temperature
+  dhw_electric_heater: switch.your_dhw_electric_heater
 
   exhaust_temperature: sensor.ecomax_810p_l_touch_exhaust_temperature
   feeder_temperature: sensor.ecomax_810p_l_touch_feeder_temperature
@@ -78,11 +81,12 @@ entities:
 - `title` (optional): card title
 - `layout` (optional, default `auto`): `auto` | `mobile` | `desktop`
 - `breakpoint` (optional, default `700`): width in px used for `layout: auto`
+- `theme` (optional, default `auto`): `auto` | `light` | `dark`. `auto` follows Home Assistant's active light/dark mode; `light`/`dark` force the card's appearance regardless of the dashboard theme.
 - `show_diagnostics` (optional, default `true`): show the secondary diagnostics grid (fan output, flue/feeder temperature, O₂ level, circulation pump, lighter, operating modes). Primary values (boiler/heating/DHW temperatures, boiler load, fuel level, outdoor temperature) always appear once, on the system diagram.
 - `extra_tiles` (optional): list of additional diagnostic tiles. Each item supports `entity`, optional `label`, optional `icon` (`thermo|fire|fan|pump|alert`), and optional `format` (`auto|raw|temp|pct|onoff`).
-- `entities` (required): mapping of your ecoMAX entities (see example above)
+- `entities` (required): mapping of your ecoMAX entities (see example above). `connection_status` is optional — map it to your device's connectivity `binary_sensor` to show an "Offline" status when the controller is unreachable, instead of just "Off". `dhw_electric_heater` is optional — map it to any `switch` entity (e.g. a smart plug) that controls an electric heating element inside the DHW tank; this is not part of the ecoMAX controller itself, it's shown as a separate indicator on the DHW box.
 
-The card automatically follows the active Home Assistant theme (light/dark).
+By default (`theme: auto`) the card follows the active Home Assistant light/dark mode. Set `theme: dark` or `theme: light` to override it.
 
 ## Development
 
