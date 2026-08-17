@@ -2,6 +2,8 @@
 
 A custom Lovelace card that visualizes a **Plum ecoMAX 810P-L Touch** boiler + mixer loop in a single diagram, with **animated flow indicators** driven by Home Assistant entities.
 
+![ecoMAX810P Diagram Card preview](docs/ecomax810p-diagram-card-preview.svg)
+
 ## Install (HACS)
 
 1. HACS → **Frontend**

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">ecoMAX810P Diagram Card</title>
+  <desc id="description">Preview of boiler, mixer, and domestic hot water status in the Home Assistant card.</desc>
+  <rect width="1200" height="675" fill="#20262d"/>
+  <rect x="44" y="42" width="1112" height="590" rx="8" fill="#f4f7f8"/>
+  <rect x="44" y="42" width="1112" height="74" rx="8" fill="#0d6b74"/>
+  <text x="82" y="88" fill="#ffffff" font-family="sans-serif" font-size="30" font-weight="700">ecoMAX810P</text>
+  <text x="82" y="310" fill="#263238" font-family="sans-serif" font-size="28" font-weight="700">Boiler</text>
+  <rect x="82" y="336" width="202" height="184" rx="4" fill="#dce6e7" stroke="#0d6b74" stroke-width="6"/>
+  <path d="M183 356v142M122 420h122" stroke="#d1503b" stroke-width="18" stroke-linecap="round"/>
+  <text x="111" y="560" fill="#263238" font-family="sans-serif" font-size="24">72 C / 75 C</text>
+  <path d="M290 430h218" fill="none" stroke="#d1503b" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="398" cy="430" r="29" fill="#f0b341" stroke="#263238" stroke-width="5"/>
+  <text x="344" y="381" fill="#263238" font-family="sans-serif" font-size="26" font-weight="700">Mixer</text>
+  <path d="M528 430h182q28 0 28 28v62" fill="none" stroke="#df7855" stroke-width="16" stroke-linecap="round"/>
+  <rect x="738" y="315" width="148" height="224" rx="48" fill="#cee3ea" stroke="#0d6b74" stroke-width="6"/>
+  <path d="M774 420h76" stroke="#df7855" stroke-width="15"/>
+  <text x="747" y="278" fill="#263238" font-family="sans-serif" font-size="26" font-weight="700">DHW</text>
+  <text x="742" y="578" fill="#263238" font-family="sans-serif" font-size="24">48 C / 50 C</text>
+  <rect x="936" y="184" width="164" height="92" rx="4" fill="#ffffff" stroke="#c3d0d3" stroke-width="2"/>
+  <text x="958" y="222" fill="#526268" font-family="sans-serif" font-size="20">Boiler load</text>
+  <text x="958" y="255" fill="#263238" font-family="sans-serif" font-size="30" font-weight="700">62%</text>
+  <rect x="936" y="300" width="164" height="92" rx="4" fill="#ffffff" stroke="#c3d0d3" stroke-width="2"/>
+  <text x="958" y="338" fill="#526268" font-family="sans-serif" font-size="20">Fuel level</text>
+  <text x="958" y="371" fill="#263238" font-family="sans-serif" font-size="30" font-weight="700">81%</text>
+  <rect x="936" y="416" width="164" height="92" rx="4" fill="#ffffff" stroke="#c3d0d3" stroke-width="2"/>
+  <text x="958" y="454" fill="#526268" font-family="sans-serif" font-size="20">Status</text>
+  <text x="958" y="487" fill="#178048" font-family="sans-serif" font-size="27" font-weight="700">Heating</text>
+</svg>
