@@ -330,12 +330,26 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this._render();
+    if (!this.shadowRoot || this.shadowRoot.childElementCount === 0) {
+      this._render();
+      return;
+    }
+    // Avoid a full re-render on every hass update: it would tear down and
+    // recreate every ha-entity-picker, closing its dropdown mid-selection.
+    const pickers = Array.from(this.shadowRoot.querySelectorAll("ha-entity-picker")) as any[];
+    for (const p of pickers) p.hass = hass;
   }
 
   setConfig(config: EditorConfig): void {
+    const prevTileCount = Array.isArray(this._config?.extra_tiles) ? this._config!.extra_tiles!.length : 0;
+    const nextTileCount = Array.isArray(config.extra_tiles) ? config.extra_tiles.length : 0;
+    // The host round-trips our own config-changed events back into setConfig.
+    // Only rebuild the DOM when the layout actually changed (first render or
+    // a different number of extra tiles); otherwise this would defocus
+    // whichever picker/input the user is currently interacting with.
+    const needsFullRender = !this._config || prevTileCount !== nextTileCount;
     this._config = config;
-    this._render();
+    if (needsFullRender) this._render();
   }
 
   private _valueChanged(ev: Event): void {
@@ -419,17 +433,6 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
         composed: true
       })
     );
-  }
-
-  private _row(label: string, key: string): string {
-    const value = (this._config?.entities as any)?.[key] ?? "";
-    // ha-entity-picker exists in HA frontend; fallback to textfield if not.
-    return `
-      <div class="row">
-        <div class="rowLabel">${esc(label)}</div>
-        <ha-entity-picker data-key="${esc(key)}" .hass=${""} value="${esc(value)}"></ha-entity-picker>
-      </div>
-    `;
   }
 
   private _render(): void {
