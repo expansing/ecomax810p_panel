@@ -5,6 +5,9 @@ export type HassEntity = {
 
 export type HomeAssistant = {
   states: Record<string, HassEntity | undefined>;
+  themes?: {
+    darkMode?: boolean;
+  };
   localize?: (key: string, ...args: unknown[]) => string;
 };
 

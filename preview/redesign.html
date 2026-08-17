@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ecoMAX810P Card Redesign Preview</title>
+    <style>
+      :root { font-family: ui-rounded, "Trebuchet MS", sans-serif; color: #193d38; background: #dce5e2; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; }
+      main { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 48px; }
+      h1 { margin: 0; font-size: 26px; }
+      p { margin: 7px 0 24px; color: #52716c; }
+      .card { overflow: hidden; border: 1px solid #cbdad5; border-radius: 10px; background: #edf4f2; box-shadow: 0 18px 42px rgba(34, 66, 59, .14); }
+      .overview { min-height: 86px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px; border-bottom: 1px solid #ceded9; background: #f7fbfa; }
+      .eyebrow { margin: 0; color: #52716c; font-size: 11px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+      .label { margin: 3px 0 0; color: #5c746f; font-size: 11px; font-weight: 700; }
+      h2 { margin: 4px 0 0; font-size: 23px; }
+      .status { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+      .state { display: flex; align-items: center; gap: 8px; padding: 8px 11px; border-radius: 5px; font-size: 13px; font-weight: 800; white-space: nowrap; }
+      .state::before { width: 8px; height: 8px; content: ""; border-radius: 50%; background: currentColor; }
+      .state.active { color: #17633c; background: #d7eee2; }
+      .state.warn { color: #96650f; background: #fdecd2; }
+      .serving { margin: 0; font-size: 11px; font-weight: 700; color: #5c746f; }
+      .diagram { padding: 16px 18px 4px; }
+      svg { display: block; width: 100%; height: auto; }
+      .node-icon { fill: #3f8f7e; } .node--circuit .node-icon { fill: #b8842f; } .node--dhw .node-icon { fill: #3f88a3; }
+      .compact-system { display: none; }
+      .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 18px 20px; }
+      .metric { min-height: 66px; display: grid; grid-template-columns: 30px 1fr; gap: 9px; align-items: center; padding: 9px 10px; border: 1px solid #d6e4df; border-radius: 6px; background: #fff; }
+      .metric > div:first-child { width: 30px; height: 30px; border-radius: 5px; background: #e1efeb; }
+      .metric > div:last-child { min-width: 0; }
+      .metric.active { border-color: #9fd6c3; box-shadow: inset 3px 0 #2bba78; }
+      .value { color: #1d3c38; font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .metric .label { margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      body[data-theme="dark"] { color: #e6f1ed; background: #0b1412; }
+      body[data-theme="dark"] p { color: #9cb8b0; } body[data-theme="dark"] .card { border-color: #2e4942; background: #14231f; box-shadow: 0 18px 42px rgba(0, 0, 0, .34); }
+      body[data-theme="dark"] .overview { border-color: #2d4943; background: #192b27; } body[data-theme="dark"] h1, body[data-theme="dark"] h2 { color: #f0f8f5; }
+      body[data-theme="dark"] .eyebrow, body[data-theme="dark"] .serving { color: #9cb8b0; }
+      body[data-theme="dark"] .state.active { background: #173d2c; color: #8de0ac; }
+      body[data-theme="dark"] .metric { border-color: #38554e; background: #1d302b; } body[data-theme="dark"] .metric.active { border-color: #478467; box-shadow: inset 3px 0 #42c985; }
+      body[data-theme="dark"] .metric > div:first-child { background: #29443d; } body[data-theme="dark"] .value { color: #f0f8f5; } body[data-theme="dark"] .metric .label { color: #acc4bd; }
+      body[data-theme="dark"] .full-system > rect:first-of-type, body[data-theme="dark"] .compact-system > rect:first-of-type { fill: #13211e; stroke: #2e4942; }
+      body[data-theme="dark"] .full-system > g rect, body[data-theme="dark"] .compact-system > g rect { fill: #1d302b; stroke: #38554e; }
+      body[data-theme="dark"] .full-system > g[transform="translate(412 66)"] rect, body[data-theme="dark"] .compact-system > g[transform="translate(14 184)"] rect { fill: #332d23; stroke: #665537; }
+      body[data-theme="dark"] .full-system > g[transform="translate(680 216)"] rect, body[data-theme="dark"] .compact-system > g[transform="translate(186 184)"] rect { fill: #1a3034; stroke: #365c64; }
+      body[data-theme="dark"] .full-system text, body[data-theme="dark"] .compact-system text { fill: #aac4bd; }
+      body[data-theme="dark"] .full-system text[fill="#173d39"], body[data-theme="dark"] .compact-system text[fill="#173d39"], body[data-theme="dark"] .full-system text[fill="#234640"], body[data-theme="dark"] .compact-system text[fill="#234640"] { fill: #f1faf6; }
+      body[data-theme="dark"] .node-icon { fill: #7fd0b8; } body[data-theme="dark"] .node--circuit .node-icon { fill: #e0b463; } body[data-theme="dark"] .node--dhw .node-icon { fill: #7fc4dd; }
+      @media (max-width: 700px) {
+        main { width: min(100% - 20px, 560px); padding-top: 14px; }
+        h1 { font-size: 20px; } .overview { min-height: 76px; padding: 14px 16px; } h2 { font-size: 19px; }
+        .state { padding: 7px 9px; font-size: 12px; } .diagram { padding: 12px 12px 2px; }
+        .full-system { display: none; } .compact-system { display: block; }
+        .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; padding: 10px 12px 14px; }
+        .metric { min-height: 58px; padding: 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ecoMAX810P Card Redesign</h1>
+      <p>Status-driven overview. Each value appears exactly once; active circuits are marked by color, not movement.</p>
+      <section class="card" aria-label="ecoMAX810P heating system">
+        <header class="overview">
+          <div><p class="eyebrow">Heating system</p><h2>ecoMAX810P</h2></div>
+          <div class="status"><div class="state active">Heating</div><p class="serving">Serving heating circuit</p></div>
+        </header>
+        <div class="diagram">
+          <svg class="full-system" viewBox="0 0 960 390" role="img" aria-label="Boiler feeding a heating circuit and domestic hot water">
+            <defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#527b73" stroke-width="1" opacity=".06"/></pattern></defs>
+            <rect width="960" height="390" rx="10" fill="#f8fbfa" stroke="#d9e7e3"/><rect width="960" height="390" rx="10" fill="url(#grid)"/>
+            <g transform="translate(404 13)"><rect width="152" height="28" rx="4" fill="#e8f1ee" stroke="#c8dcd5"/><text x="76" y="18" text-anchor="middle" fill="#41665e" font-size="11" font-weight="800">OUTSIDE 4°C</text></g>
+            <path d="M286 185H350V112H412" fill="none" stroke="#d96d4f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M412 174H350V304H286" fill="none" stroke="#4f99a7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M286 214H626V242H680" fill="none" stroke="#d3dfdc" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M680 304H626V334H286" fill="none" stroke="#d3dfdc" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="350" cy="185" r="7" fill="#2bba78"/><circle cx="626" cy="214" r="7" fill="#d3dfdc"/>
+            <g class="node--boiler" transform="translate(52 100)"><rect width="234" height="230" rx="8" fill="#fff" stroke="#d2e0dc" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M13.5 0s.5 2.5-1 4.5S9 8 9 11a6 6 0 0 0 12 0c0-4.5-3-7-3-9.5 0 0-.5 2.5-2 4.5S13.5 0 13.5 0ZM12 24a8 8 0 0 1-8-8c0-4.5 2.5-7.5 4.5-10C8 10 12 11 12 16c0-3 2-4 3-6 0 0 5 3 5 6a8 8 0 0 1-8 8Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">BOILER</text><text x="20" y="82" fill="#173d39" font-size="39" font-weight="800">72°C</text><text x="20" y="106" fill="#56706b" font-size="11" font-weight="800">SETPOINT 75°C</text><path d="M20 126H214" stroke="#d8e5e1"/><text x="20" y="154" fill="#68817c" font-size="10" font-weight="800">OUTPUT</text><text x="20" y="179" fill="#234640" font-size="19" font-weight="800">62%</text><text x="120" y="154" fill="#68817c" font-size="10" font-weight="800">FUEL</text><text x="120" y="179" fill="#234640" font-size="19" font-weight="800">81%</text><text x="20" y="211" fill="#52716c" font-size="11" font-weight="800">HEATING PUMP · ACTIVE</text><circle cx="207" cy="29" r="6" fill="#2bba78"/></g>
+            <g class="node--circuit" transform="translate(412 66)"><rect width="224" height="116" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HEATING CIRCUIT</text><text x="20" y="74" fill="#173d39" font-size="31" font-weight="800">39°C</text><text x="106" y="74" fill="#56706b" font-size="11" font-weight="800">TARGET 42°C</text><text x="20" y="98" fill="#52716c" font-size="11" font-weight="800">ACTIVE · THERMOSTAT</text><circle cx="196" cy="29" r="6" fill="#2bba78"/></g>
+            <g class="node--dhw" transform="translate(680 216)"><rect width="228" height="116" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">DOMESTIC HOT WATER</text><text x="20" y="74" fill="#173d39" font-size="31" font-weight="800">48°C</text><text x="106" y="74" fill="#56706b" font-size="11" font-weight="800">TARGET 50°C</text><text x="20" y="98" fill="#52716c" font-size="11" font-weight="800">IDLE · HEATING</text><circle cx="202" cy="29" r="6" fill="#d3dfdc"/></g>
+          </svg>
+          <svg class="compact-system" viewBox="0 0 360 322" role="img" aria-label="Compact boiler, heating, and domestic hot water status">
+            <defs><pattern id="compact-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#527b73" stroke-width="1" opacity=".06"/></pattern></defs>
+            <rect width="360" height="322" rx="10" fill="#f8fbfa" stroke="#d9e7e3"/><rect width="360" height="322" rx="10" fill="url(#compact-grid)"/>
+            <g transform="translate(120 14)"><rect width="120" height="24" rx="4" fill="#e8f1ee" stroke="#c8dcd5"/><text x="60" y="16" text-anchor="middle" fill="#41665e" font-size="10" font-weight="800">OUTSIDE 4°C</text></g>
+            <g class="node--boiler" transform="translate(14 52)"><rect width="332" height="112" rx="8" fill="#fff" stroke="#d2e0dc" stroke-width="1.5"/><g class="node-icon" transform="translate(16 12) scale(0.55)"><path d="M13.5 0s.5 2.5-1 4.5S9 8 9 11a6 6 0 0 0 12 0c0-4.5-3-7-3-9.5 0 0-.5 2.5-2 4.5S13.5 0 13.5 0ZM12 24a8 8 0 0 1-8-8c0-4.5 2.5-7.5 4.5-10C8 10 12 11 12 16c0-3 2-4 3-6 0 0 5 3 5 6a8 8 0 0 1-8 8Z"/></g><text x="38" y="26" fill="#607b74" font-size="11" font-weight="800">BOILER</text><text x="16" y="65" fill="#173d39" font-size="30" font-weight="800">72°C</text><text x="116" y="65" fill="#56706b" font-size="10" font-weight="800">SETPOINT 75°C</text><text x="16" y="95" fill="#52716c" font-size="10" font-weight="800">62% OUTPUT · 81% FUEL · ACTIVE</text><circle cx="308" cy="24" r="5" fill="#2bba78"/></g>
+            <path d="M97 164V184" fill="none" stroke="#d96d4f" stroke-width="7" stroke-linecap="round"/><path d="M263 164V184" fill="none" stroke="#d3dfdc" stroke-width="7" stroke-linecap="round"/>
+            <g class="node--circuit" transform="translate(14 184)"><rect width="160" height="126" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HEATING</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">39°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 42°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">ACTIVE</text><circle cx="138" cy="24" r="5" fill="#2bba78"/></g>
+            <g class="node--dhw" transform="translate(186 184)"><rect width="160" height="126" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">48°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 50°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">IDLE</text><circle cx="138" cy="24" r="5" fill="#d3dfdc"/></g>
+          </svg>
+        </div>
+        <div class="stats">
+          <div class="metric"><div></div><div><div class="value">47%</div><div class="label">Fan output</div></div></div>
+          <div class="metric"><div></div><div><div class="value">134°C</div><div class="label">Flue temp</div></div></div>
+          <div class="metric"><div></div><div><div class="value">31°C</div><div class="label">Feeder temp</div></div></div>
+          <div class="metric"><div></div><div><div class="value">8%</div><div class="label">O₂ level</div></div></div>
+          <div class="metric"><div></div><div><div class="value">Off</div><div class="label">Circulation pump</div></div></div>
+          <div class="metric"><div></div><div><div class="value">Off</div><div class="label">Lighter</div></div></div>
+          <div class="metric"><div></div><div><div class="value">Winter / Thermostat</div><div class="label">Modes</div></div></div>
+        </div>
+      </section>
+    </main>
+    <script>
+      if (new URLSearchParams(location.search).get("theme") === "dark") document.body.dataset.theme = "dark";
+    </script>
+  </body>
+</html>

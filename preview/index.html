@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ecoMAX810P Diagram Card Preview</title>
+    <style>
+      :root { color-scheme: dark; font-family: ui-rounded, "Trebuchet MS", sans-serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; background: #172126; color: #e8f1ef; }
+      main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 48px; }
+      h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: 0; }
+      p { margin: 0 0 24px; color: #afc0bd; }
+      ha-card { display: block; border-radius: 10px; overflow: hidden; background: #263238; box-shadow: 0 18px 48px rgba(0, 0, 0, .3); }
+      ecomax810p-diagram-card { --ha-card-background: #263238; --primary-text-color: #edf7f5; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ecoMAX810P Diagram Card</h1>
+      <p>Mocked heating state for visual development.</p>
+      <ecomax810p-diagram-card id="card"></ecomax810p-diagram-card>
+    </main>
+    <script type="module">
+      if (!customElements.get("ha-card")) customElements.define("ha-card", class extends HTMLElement {});
+      await import("../ecomax810p-diagram-card.js");
+
+      const entity = (state, unit) => ({
+        state: String(state),
+        attributes: unit ? { unit_of_measurement: unit } : {}
+      });
+      const prefix = "ecomax_810p_l_touch";
+      const states = {
+        [`sensor.${prefix}_state`]: entity("Heating"),
+        [`binary_sensor.${prefix}_alert`]: entity("off"),
+        [`sensor.${prefix}_outside_temperature`]: entity(4, "°C"),
+        [`sensor.${prefix}_boiler_load`]: entity(62, "%"),
+        [`sensor.${prefix}_fuel_level`]: entity(81, "%"),
+        [`sensor.${prefix}_fan_power`]: entity(47, "%"),
+        [`sensor.${prefix}_heating_temperature`]: entity(72, "°C"),
+        [`sensor.${prefix}_heating_target_temperature`]: entity(75, "°C"),
+        [`sensor.${prefix}_mixer_1_mixer_temperature`]: entity(39, "°C"),
+        [`sensor.${prefix}_mixer_1_mixer_target_temperature`]: entity(42, "°C"),
+        [`sensor.${prefix}_water_heater_temperature`]: entity(48, "°C"),
+        [`sensor.${prefix}_water_heater_target_temperature`]: entity(50, "°C"),
+        [`sensor.${prefix}_exhaust_temperature`]: entity(134, "°C"),
+        [`sensor.${prefix}_feeder_temperature`]: entity(31, "°C"),
+        [`sensor.${prefix}_oxygen_level`]: entity(8.4, "%"),
+        [`select.${prefix}_summer_mode`]: entity("Winter"),
+        [`select.${prefix}_mixer_1_work_mode`]: entity("Thermostat"),
+        [`water_heater.${prefix}_indirect_water_heater`]: entity("heating"),
+        [`binary_sensor.${prefix}_heating_pump`]: entity("on"),
+        [`binary_sensor.${prefix}_water_heater_pump`]: entity("on"),
+        [`binary_sensor.${prefix}_mixer_1_mixer_pump`]: entity("on"),
+        [`binary_sensor.${prefix}_circulation_pump`]: entity("off"),
+        [`binary_sensor.${prefix}_fan`]: entity("on"),
+        [`binary_sensor.${prefix}_exhaust_fan`]: entity("on"),
+        [`binary_sensor.${prefix}_feeder`]: entity("off"),
+        [`binary_sensor.${prefix}_lighter`]: entity("off")
+      };
+      const card = document.querySelector("#card");
+      const isDark = new URLSearchParams(location.search).get("theme") === "dark";
+      card.setConfig({
+        type: "custom:ecomax810p-diagram-card",
+        title: "ecoMAX810P",
+        layout: "auto",
+        entities: Object.fromEntries(Object.entries({
+          state: `sensor.${prefix}_state`, alert: `binary_sensor.${prefix}_alert`, outside_temperature: `sensor.${prefix}_outside_temperature`,
+          boiler_load: `sensor.${prefix}_boiler_load`, fuel_level: `sensor.${prefix}_fuel_level`, fan_power: `sensor.${prefix}_fan_power`,
+          boiler_temperature: `sensor.${prefix}_heating_temperature`, boiler_target_temperature: `sensor.${prefix}_heating_target_temperature`,
+          mixer_temperature: `sensor.${prefix}_mixer_1_mixer_temperature`, mixer_target_temperature: `sensor.${prefix}_mixer_1_mixer_target_temperature`,
+          dhw_temperature: `sensor.${prefix}_water_heater_temperature`, dhw_target_temperature: `sensor.${prefix}_water_heater_target_temperature`,
+          exhaust_temperature: `sensor.${prefix}_exhaust_temperature`, feeder_temperature: `sensor.${prefix}_feeder_temperature`, oxygen_level: `sensor.${prefix}_oxygen_level`,
+          summer_mode: `select.${prefix}_summer_mode`, mixer_work_mode: `select.${prefix}_mixer_1_work_mode`, water_heater: `water_heater.${prefix}_indirect_water_heater`,
+          heating_pump_running: `binary_sensor.${prefix}_heating_pump`, dhw_pump_running: `binary_sensor.${prefix}_water_heater_pump`, mixer_pump_running: `binary_sensor.${prefix}_mixer_1_mixer_pump`,
+          circulation_pump_running: `binary_sensor.${prefix}_circulation_pump`, fan_running: `binary_sensor.${prefix}_fan`, exhaust_fan_running: `binary_sensor.${prefix}_exhaust_fan`, feeder_running: `binary_sensor.${prefix}_feeder`, lighter_running: `binary_sensor.${prefix}_lighter`
+        }))
+      });
+      card.hass = { states, themes: { darkMode: isDark } };
+    </script>
+  </body>
+</html>

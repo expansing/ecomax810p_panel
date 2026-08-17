@@ -40,39 +40,29 @@ export type EcoMaxDiagramCardConfig = {
   title?: string;
   entities: EntityMap;
 
-  /** Scale the entire diagram. */
-  scale?: number;
-
-  /** Optional: show a compact left panel like the original screen. */
-  show_left_panel?: boolean;
-
   /**
    * Responsive layout:
    * - `auto` (default): switch based on card width
-   * - `mobile`: force mobile layout
-   * - `desktop`: force desktop layout
+   * - `mobile`: force the compact system view
+   * - `desktop`: force the full system view
    */
   layout?: "auto" | "mobile" | "desktop";
 
   /** Width breakpoint (px) used when `layout: auto`. Default: 700. */
   breakpoint?: number;
 
-  /** Show a stats grid with lots of extra information (recommended). Default: true. */
-  show_stats?: boolean;
-
-  /** When `show_stats` is enabled, show compact tiles on narrow layout. Default: true. */
-  compact_stats_on_mobile?: boolean;
-
   /**
-   * Diagram offsets (px). Useful for pixel-perfect alignment across different layouts.
-   * Default: 0/0.
+   * Show the secondary diagnostics grid (fan output, flue/feeder temperature,
+   * O₂ level, circulation pump, lighter, and operating modes). Primary values
+   * (boiler/heating/DHW temperatures, boiler load, fuel level) are always
+   * shown once on the system diagram. Default: true.
    */
-  diagram_offset_x?: number;
-  diagram_offset_y?: number;
+  show_diagnostics?: boolean;
 
   /**
-   * Add any extra tiles you want rendered in the stats grid.
-   * Useful for “show everything” without changing code.
+   * Add any extra diagnostic tiles you want rendered alongside the built-in
+   * diagnostics grid. Useful for exposing additional ecoMAX entities without
+   * changing code.
    */
   extra_tiles?: Array<{
     entity: string;
@@ -85,15 +75,6 @@ export type EcoMaxDiagramCardConfig = {
     /** Value formatting. `auto` uses unit/device_class when available. */
     format?: "auto" | "raw" | "temp" | "pct" | "onoff";
   }>;
-
-  /**
-   * Optional diagram background image/SVG (served by HA), e.g.:
-   * - `/local/ecomax/diagram.png`
-   * - `/local/ecomax/diagram.svg`
-   *
-   * When set, the card renders this as the base layer and overlays animations + pills.
-   */
-  background_url?: string;
 };
 
 export function assertConfig(config: unknown): asserts config is EcoMaxDiagramCardConfig {

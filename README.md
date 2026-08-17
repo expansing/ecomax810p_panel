@@ -28,15 +28,9 @@ Add a manual card (or use the visual editor):
 ```yaml
 type: custom:ecomax810p-diagram-card
 title: ecoMAX810P
-show_left_panel: true
-scale: 1
 layout: auto
 breakpoint: 700
-show_stats: true
-compact_stats_on_mobile: true
-diagram_offset_x: 0
-diagram_offset_y: 0
-background_url: /local/ecomax/diagram.png
+show_diagnostics: true
 extra_tiles:
   - entity: sensor.ecomax_810p_l_touch_connected_modules
     label: Modules
@@ -82,16 +76,13 @@ entities:
 ### Config options
 
 - `title` (optional): card title
-- `show_left_panel` (optional, default `true`): show/hide the left “tiles” panel
-- `scale` (optional, default `1`): scales the diagram (use e.g. `0.9` or `1.1`)
 - `layout` (optional, default `auto`): `auto` | `mobile` | `desktop`
 - `breakpoint` (optional, default `700`): width in px used for `layout: auto`
-- `show_stats` (optional, default `true`): show a responsive stats tile grid with lots of extra values
-- `compact_stats_on_mobile` (optional, default `true`): reduce spacing on mobile layout
-- `diagram_offset_x` / `diagram_offset_y` (optional, default `0`): nudge the diagram in px (helps fix “diagram is offset”)
-- `background_url` (optional): render your own ecoMAX diagram image as a background (best way to match the original look). Put the file in HA `/config/www/...` and reference it as `/local/...`.
-- `extra_tiles` (optional): list of additional tiles. Each item supports `entity`, optional `label`, optional `icon` (`thermo|fire|fan|pump|alert`), and optional `format` (`auto|raw|temp|pct|onoff`).
+- `show_diagnostics` (optional, default `true`): show the secondary diagnostics grid (fan output, flue/feeder temperature, O₂ level, circulation pump, lighter, operating modes). Primary values (boiler/heating/DHW temperatures, boiler load, fuel level, outdoor temperature) always appear once, on the system diagram.
+- `extra_tiles` (optional): list of additional diagnostic tiles. Each item supports `entity`, optional `label`, optional `icon` (`thermo|fire|fan|pump|alert`), and optional `format` (`auto|raw|temp|pct|onoff`).
 - `entities` (required): mapping of your ecoMAX entities (see example above)
+
+The card automatically follows the active Home Assistant theme (light/dark).
 
 ## Development
 
