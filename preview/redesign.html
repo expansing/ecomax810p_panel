@@ -37,7 +37,29 @@
       .heater-glyph.active .heater-body { fill: #fdf1dc; stroke: #d9921a; }
       .heater-bolt { fill: #aabcb8; }
       .heater-glyph.active .heater-bolt { fill: #b8720f; }
+      .mixer-ring { fill: none; stroke: transparent; }
+      .mixer-glyph.active .mixer-ring { stroke: rgba(184, 132, 47, .32); stroke-width: 3; }
+      .mixer-body { fill: #eef3f1; stroke: #c6dad4; stroke-width: 1.5; }
+      .mixer-glyph.active .mixer-body { fill: #fdf3df; stroke: #b8842f; }
+      .mixer-arrow { fill: none; stroke: #aabcb8; stroke-width: 2; stroke-linecap: round; }
+      .mixer-glyph.active .mixer-arrow { stroke: #8a611f; }
+      .full-system .node--circuit { transform: translate(380px, 55px) !important; }
+      .full-system .node--dhw { transform: translate(680px, 190px) !important; }
+      .compact-system .node--circuit { transform: translate(14px, 285px) !important; }
+      .compact-system .node--dhw { transform: translate(186px, 285px) !important; }
+      .compact-system .node--circuit > rect, .compact-system .node--dhw > rect { height: 118px; }
       .compact-system { display: none; }
+      /* Preview of the opt-in show_animations feature (real card gates this on .cardShell--animated). */
+      @keyframes pumpPulse { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+      @keyframes statePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(43, 186, 120, .35); } 50% { box-shadow: 0 0 0 5px rgba(43, 186, 120, 0); } }
+      @keyframes pipeFlow { to { stroke-dashoffset: -48; } }
+      .pump-glyph.active .pump-ring { animation: pumpPulse 1.6s ease-in-out infinite; }
+      .mixer-glyph.active .mixer-ring { animation: pumpPulse 1.6s ease-in-out infinite; }
+      .state.active { animation: statePulse 2.2s ease-in-out infinite; }
+      .full-system path[stroke="#d96d4f"], .full-system path[stroke="#4f99a7"] { stroke-dasharray: 14 10; animation: pipeFlow 1s linear infinite; }
+      @media (prefers-reduced-motion: reduce) {
+        .pump-glyph.active .pump-ring, .mixer-glyph.active .mixer-ring, .state.active, .full-system path[stroke="#d96d4f"], .full-system path[stroke="#4f99a7"] { animation: none; }
+      }
       .controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 18px; background: #edf4f2; border-top: 1px solid #d6e4df; }
       .ctrlTile { border-color: #cfe3dd; }
       .ctrlTile--wide { grid-column: span 2; }
@@ -57,32 +79,35 @@
       .metric.active { border-color: #9fd6c3; box-shadow: inset 3px 0 #2bba78; }
       .value { color: #1d3c38; font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .metric .label { margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      body[data-theme="dark"] { color: #e6f1ed; background: #0b1412; }
-      body[data-theme="dark"] p { color: #9cb8b0; } body[data-theme="dark"] .card { border-color: #2e4942; background: #14231f; box-shadow: 0 18px 42px rgba(0, 0, 0, .34); }
-      body[data-theme="dark"] .overview { border-color: #2d4943; background: #192b27; } body[data-theme="dark"] h1, body[data-theme="dark"] h2 { color: #f0f8f5; }
-      body[data-theme="dark"] .eyebrow, body[data-theme="dark"] .serving { color: #9cb8b0; }
-      body[data-theme="dark"] .state.active { background: #173d2c; color: #8de0ac; }
-      body[data-theme="dark"] .controls { background: #14231f; border-color: #38554e; }
-      body[data-theme="dark"] .ctrlSwitch { background: #1d302b; border-color: #38554e; }
+      body[data-theme="dark"] { color: #e8eaed; background: #08090a; }
+      body[data-theme="dark"] p { color: #aeb3ba; } body[data-theme="dark"] .card { border-color: #303238; background: #111214; box-shadow: 0 18px 42px rgba(0, 0, 0, .48); }
+      body[data-theme="dark"] .overview { border-color: #303238; background: #17181b; } body[data-theme="dark"] h1, body[data-theme="dark"] h2 { color: #f4f5f7; }
+      body[data-theme="dark"] .eyebrow, body[data-theme="dark"] .serving { color: #aeb3ba; }
+      body[data-theme="dark"] .state.active { background: #1d3025; color: #9ee3b7; }
+      body[data-theme="dark"] .controls { background: #111214; border-color: #3a3d42; }
+      body[data-theme="dark"] .ctrlSwitch { background: #1b1d20; border-color: #3a3d42; }
       body[data-theme="dark"] .ctrlSwitch.is-on { background: #2bba78; border-color: #2bba78; }
-      body[data-theme="dark"] .ctrlStepBtn { background: #1d302b; border-color: #38554e; color: #f1faf6; }
-      body[data-theme="dark"] .ctrlChip { background: #1d302b; border-color: #38554e; color: #aac4bd; }
+      body[data-theme="dark"] .ctrlStepBtn { background: #1b1d20; border-color: #3a3d42; color: #f4f5f7; }
+      body[data-theme="dark"] .ctrlChip { background: #1b1d20; border-color: #3a3d42; color: #c3c7cc; }
       body[data-theme="dark"] .ctrlChip.is-active { background: #2bba78; border-color: #2bba78; color: #0d2118; }
-      body[data-theme="dark"] .metric { border-color: #38554e; background: #1d302b; } body[data-theme="dark"] .metric.active { border-color: #478467; box-shadow: inset 3px 0 #42c985; }
-      body[data-theme="dark"] .metric > div:first-child { background: #29443d; } body[data-theme="dark"] .value { color: #f0f8f5; } body[data-theme="dark"] .metric .label { color: #acc4bd; }
-      body[data-theme="dark"] .full-system > rect:first-of-type, body[data-theme="dark"] .compact-system > rect:first-of-type { fill: #13211e; stroke: #2e4942; }
-      body[data-theme="dark"] .full-system > g rect, body[data-theme="dark"] .compact-system > g rect { fill: #1d302b; stroke: #38554e; }
+      body[data-theme="dark"] .metric { border-color: #3a3d42; background: #1b1d20; } body[data-theme="dark"] .metric.active { border-color: #478467; box-shadow: inset 3px 0 #42c985; }
+      body[data-theme="dark"] .metric > div:first-child { background: #292c31; } body[data-theme="dark"] .value { color: #f4f5f7; } body[data-theme="dark"] .metric .label { color: #c3c7cc; }
+      body[data-theme="dark"] .full-system > rect:first-of-type, body[data-theme="dark"] .compact-system > rect:first-of-type { fill: #111214; stroke: #303238; }
+      body[data-theme="dark"] .full-system > g rect, body[data-theme="dark"] .compact-system > g rect { fill: #1b1d20; stroke: #3a3d42; }
       body[data-theme="dark"] .node--circuit rect { fill: #332d23; stroke: #665537; }
       body[data-theme="dark"] .node--dhw rect { fill: #1a3034; stroke: #365c64; }
-      body[data-theme="dark"] .full-system text, body[data-theme="dark"] .compact-system text { fill: #aac4bd; }
-      body[data-theme="dark"] .full-system text[fill="#173d39"], body[data-theme="dark"] .compact-system text[fill="#173d39"], body[data-theme="dark"] .full-system text[fill="#234640"], body[data-theme="dark"] .compact-system text[fill="#234640"] { fill: #f1faf6; }
+      body[data-theme="dark"] .full-system text, body[data-theme="dark"] .compact-system text { fill: #c3c7cc; }
+      body[data-theme="dark"] .full-system text[fill="#173d39"], body[data-theme="dark"] .compact-system text[fill="#173d39"], body[data-theme="dark"] .full-system text[fill="#234640"], body[data-theme="dark"] .compact-system text[fill="#234640"] { fill: #f4f5f7; }
       body[data-theme="dark"] .node-icon { fill: #7fd0b8; } body[data-theme="dark"] .node--circuit .node-icon { fill: #e0b463; } body[data-theme="dark"] .node--dhw .node-icon { fill: #7fc4dd; }
-      body[data-theme="dark"] .pump-body { fill: #1d302b; stroke: #38554e; } body[data-theme="dark"] .pump-glyph.active .pump-body { fill: #173d2c; stroke: #42c985; }
-      body[data-theme="dark"] .pump-blade { fill: #5c7770; } body[data-theme="dark"] .pump-glyph.active .pump-blade { fill: #5be79c; }
+      body[data-theme="dark"] .pump-body { fill: #1b1d20; stroke: #3a3d42; } body[data-theme="dark"] .pump-glyph.active .pump-body { fill: #1d3025; stroke: #42c985; }
+      body[data-theme="dark"] .pump-blade { fill: #888d94; } body[data-theme="dark"] .pump-glyph.active .pump-blade { fill: #5be79c; }
       body[data-theme="dark"] .pump-glyph.active .pump-ring { stroke: rgba(66, 201, 133, .35); }
-      body[data-theme="dark"] .heater-body { fill: #1d302b; stroke: #38554e; } body[data-theme="dark"] .heater-glyph.active .heater-body { fill: #3d2f16; stroke: #e0a838; }
-      body[data-theme="dark"] .heater-bolt { fill: #5c7770; } body[data-theme="dark"] .heater-glyph.active .heater-bolt { fill: #f0c05e; }
+      body[data-theme="dark"] .heater-body { fill: #1b1d20; stroke: #3a3d42; } body[data-theme="dark"] .heater-glyph.active .heater-body { fill: #3d2f16; stroke: #e0a838; }
+      body[data-theme="dark"] .heater-bolt { fill: #888d94; } body[data-theme="dark"] .heater-glyph.active .heater-bolt { fill: #f0c05e; }
       body[data-theme="dark"] .heater-glyph.active .heater-ring { stroke: rgba(224, 168, 56, .35); }
+      body[data-theme="dark"] .mixer-body { fill: #1b1d20; stroke: #3a3d42; } body[data-theme="dark"] .mixer-glyph.active .mixer-body { fill: #3a2f18; stroke: #d9a83e; }
+      body[data-theme="dark"] .mixer-arrow { stroke: #888d94; } body[data-theme="dark"] .mixer-glyph.active .mixer-arrow { stroke: #e0b463; }
+      body[data-theme="dark"] .mixer-glyph.active .mixer-ring { stroke: rgba(217, 168, 56, .32); }
       @media (max-width: 700px) {
         main { width: min(100% - 20px, 560px); padding-top: 14px; }
         h1 { font-size: 20px; } .overview { min-height: 76px; padding: 14px 16px; } h2 { font-size: 19px; }
@@ -109,20 +134,25 @@
             <defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#527b73" stroke-width="1" opacity=".06"/></pattern></defs>
             <rect width="960" height="350" rx="10" fill="#f8fbfa" stroke="#d9e7e3"/><rect width="960" height="350" rx="10" fill="url(#grid)"/>
             <g transform="translate(404 13)"><rect width="152" height="28" rx="4" fill="#e8f1ee" stroke="#c8dcd5"/><text x="76" y="18" text-anchor="middle" fill="#41665e" font-size="11" font-weight="800">OUTSIDE 4°C</text></g>
-            <path d="M286 135H412" fill="none" stroke="#d96d4f" stroke-width="8" stroke-linecap="round"/><path d="M412 170H286" fill="none" stroke="#4f99a7" stroke-width="8" stroke-linecap="round"/>
-            <path d="M286 260H412" fill="none" stroke="#d3dfdc" stroke-width="8" stroke-linecap="round"/><path d="M412 295H286" fill="none" stroke="#d3dfdc" stroke-width="8" stroke-linecap="round"/>
+            <path d="M390 235V190H415" fill="none" stroke="#d96d4f" stroke-width="8" stroke-linecap="round"/><path d="M430 175V160" fill="none" stroke="#d96d4f" stroke-width="8" stroke-linecap="round"/>
+            <path d="M500 160V190H445" fill="none" stroke="#4f99a7" stroke-width="8" stroke-linecap="round"/><path d="M430 205V300H286" fill="none" stroke="#4f99a7" stroke-width="8" stroke-linecap="round"/>
+            <path d="M680 280H620V300H430" fill="none" stroke="#4f99a7" stroke-width="8" stroke-linecap="round"/><g class="mixer-glyph active" transform="translate(430 190)"><rect x="-15" y="-15" width="30" height="30" rx="5.3" class="mixer-ring"/><rect x="-11" y="-11" width="22" height="22" rx="3.9" transform="rotate(45)" class="mixer-body"/><path d="M-5 0H5M0 -5V5" class="mixer-arrow"/></g>
+            <path d="M286 235H680" fill="none" stroke="#d96d4f" stroke-width="8" stroke-linecap="round"/><circle cx="390" cy="235" r="4" fill="#fff" stroke="#607b74" stroke-width="2"/><circle cx="430" cy="300" r="4" fill="#fff" stroke="#607b74" stroke-width="2"/>
             <g class="node--boiler" transform="translate(52 100)"><rect width="234" height="230" rx="8" fill="#fff" stroke="#d2e0dc" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M13.5 0s.5 2.5-1 4.5S9 8 9 11a6 6 0 0 0 12 0c0-4.5-3-7-3-9.5 0 0-.5 2.5-2 4.5S13.5 0 13.5 0ZM12 24a8 8 0 0 1-8-8c0-4.5 2.5-7.5 4.5-10C8 10 12 11 12 16c0-3 2-4 3-6 0 0 5 3 5 6a8 8 0 0 1-8 8Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">BOILER</text><text x="20" y="82" fill="#173d39" font-size="39" font-weight="800">72°C</text><text x="20" y="106" fill="#56706b" font-size="11" font-weight="800">SETPOINT 75°C</text><path d="M20 126H214" stroke="#d8e5e1"/><text x="20" y="154" fill="#68817c" font-size="10" font-weight="800">OUTPUT</text><text x="20" y="179" fill="#234640" font-size="19" font-weight="800">62%</text><text x="120" y="154" fill="#68817c" font-size="10" font-weight="800">FUEL</text><text x="120" y="179" fill="#234640" font-size="19" font-weight="800">81%</text><text x="20" y="211" fill="#52716c" font-size="11" font-weight="800">HEATING PUMP · ACTIVE</text><g class="pump-glyph active" transform="translate(207 29)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
-            <g class="node--circuit" transform="translate(412 100)"><rect width="228" height="105" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HEATING CIRCUIT</text><text x="20" y="70" fill="#173d39" font-size="31" font-weight="800">39°C</text><text x="106" y="70" fill="#56706b" font-size="11" font-weight="800">TARGET 42°C</text><text x="20" y="94" fill="#52716c" font-size="11" font-weight="800">ACTIVE · THERMOSTAT</text><g class="pump-glyph active" transform="translate(200 29)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
-            <g class="node--dhw" transform="translate(412 225)"><rect width="228" height="105" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text><text x="20" y="70" fill="#173d39" font-size="31" font-weight="800">48°C</text><text x="106" y="70" fill="#56706b" font-size="11" font-weight="800">TARGET 50°C</text><text x="20" y="94" fill="#52716c" font-size="11" font-weight="800">IDLE · HEATING</text><g class="pump-glyph" transform="translate(200 29)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g><g class="heater-glyph active" transform="translate(168 29)"><circle r="12" class="heater-ring"/><circle r="9" class="heater-body"/><path d="M1.8 -7.2 -4.5 0.9 -0.5 0.9 -1.8 7.2 4.5 -0.9 0.5 -0.9 Z" class="heater-bolt"/></g></g>
+            <g class="node--circuit" transform="translate(446 100)"><rect width="228" height="105" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HEATING CIRCUIT</text><text x="20" y="70" fill="#173d39" font-size="31" font-weight="800">39°C</text><text x="106" y="70" fill="#56706b" font-size="11" font-weight="800">TARGET 42°C</text><text x="20" y="94" fill="#52716c" font-size="11" font-weight="800">ACTIVE · THERMOSTAT</text><g class="pump-glyph active" transform="translate(200 29)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
+            <g class="node--dhw" transform="translate(446 225)"><rect width="228" height="105" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(20 16) scale(0.6)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="44" y="31" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text><text x="20" y="70" fill="#173d39" font-size="31" font-weight="800">48°C</text><text x="106" y="70" fill="#56706b" font-size="11" font-weight="800">TARGET 50°C</text><text x="20" y="94" fill="#52716c" font-size="11" font-weight="800">IDLE · HEATING</text><g class="pump-glyph" transform="translate(200 29)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g><g class="heater-glyph active" transform="translate(168 29)"><circle r="12" class="heater-ring"/><circle r="9" class="heater-body"/><path d="M1.8 -7.2 -4.5 0.9 -0.5 0.9 -1.8 7.2 4.5 -0.9 0.5 -0.9 Z" class="heater-bolt"/></g></g>
           </svg>
-          <svg class="compact-system" viewBox="0 0 360 322" role="img" aria-label="Compact boiler, heating, and domestic hot water status">
+          <svg class="compact-system" viewBox="0 0 360 420" role="img" aria-label="Compact boiler, heating, and domestic hot water status">
             <defs><pattern id="compact-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#527b73" stroke-width="1" opacity=".06"/></pattern></defs>
-            <rect width="360" height="322" rx="10" fill="#f8fbfa" stroke="#d9e7e3"/><rect width="360" height="322" rx="10" fill="url(#compact-grid)"/>
+            <rect width="360" height="420" rx="10" fill="#f8fbfa" stroke="#d9e7e3"/><rect width="360" height="420" rx="10" fill="url(#compact-grid)"/>
             <g transform="translate(120 14)"><rect width="120" height="24" rx="4" fill="#e8f1ee" stroke="#c8dcd5"/><text x="60" y="16" text-anchor="middle" fill="#41665e" font-size="10" font-weight="800">OUTSIDE 4°C</text></g>
             <g class="node--boiler" transform="translate(14 52)"><rect width="332" height="112" rx="8" fill="#fff" stroke="#d2e0dc" stroke-width="1.5"/><g class="node-icon" transform="translate(16 12) scale(0.55)"><path d="M13.5 0s.5 2.5-1 4.5S9 8 9 11a6 6 0 0 0 12 0c0-4.5-3-7-3-9.5 0 0-.5 2.5-2 4.5S13.5 0 13.5 0ZM12 24a8 8 0 0 1-8-8c0-4.5 2.5-7.5 4.5-10C8 10 12 11 12 16c0-3 2-4 3-6 0 0 5 3 5 6a8 8 0 0 1-8 8Z"/></g><text x="38" y="26" fill="#607b74" font-size="11" font-weight="800">BOILER</text><text x="16" y="65" fill="#173d39" font-size="30" font-weight="800">72°C</text><text x="116" y="65" fill="#56706b" font-size="10" font-weight="800">SETPOINT 75°C</text><text x="16" y="95" fill="#52716c" font-size="10" font-weight="800">62% OUTPUT · 81% FUEL · ACTIVE</text><g class="pump-glyph active" transform="translate(308 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
-            <path d="M97 164V184" fill="none" stroke="#d96d4f" stroke-width="7" stroke-linecap="round"/><path d="M263 164V184" fill="none" stroke="#d3dfdc" stroke-width="7" stroke-linecap="round"/>
-            <g class="node--circuit" transform="translate(14 184)"><rect width="160" height="126" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HEATING</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">39°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 42°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">ACTIVE</text><g class="pump-glyph active" transform="translate(138 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
-            <g class="node--dhw" transform="translate(186 184)"><rect width="160" height="126" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">48°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 50°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">IDLE</text><g class="pump-glyph" transform="translate(138 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g><g class="heater-glyph active" transform="translate(114 24) scale(0.75)"><circle r="12" class="heater-ring"/><circle r="9" class="heater-body"/><path d="M1.8 -7.2 -4.5 0.9 -0.5 0.9 -1.8 7.2 4.5 -0.9 0.5 -0.9 Z" class="heater-bolt"/></g></g>
+            <path d="M180 235H112" fill="none" stroke="#d96d4f" stroke-width="7" stroke-linecap="round"/><path d="M105 242V285" fill="none" stroke="#d96d4f" stroke-width="7" stroke-linecap="round"/>
+            <path d="M55 285V235H98" fill="none" stroke="#4f99a7" stroke-width="7" stroke-linecap="round"/><path d="M105 228H145V265" fill="none" stroke="#4f99a7" stroke-width="7" stroke-linecap="round"/>
+            <path d="M145 265V164" fill="none" stroke="#4f99a7" stroke-width="7" stroke-linecap="round"/><path d="M310 285V265H145" fill="none" stroke="#4f99a7" stroke-width="7" stroke-linecap="round"/><g class="mixer-glyph active" transform="translate(105 235) scale(0.75)"><rect x="-15" y="-15" width="30" height="30" rx="5.3" class="mixer-ring"/><rect x="-11" y="-11" width="22" height="22" rx="3.9" transform="rotate(45)" class="mixer-body"/><path d="M-5 0H5M0 -5V5" class="mixer-arrow"/></g>
+            <path d="M180 164V235H263V285" fill="none" stroke="#d96d4f" stroke-width="7" stroke-linecap="round"/><circle cx="180" cy="235" r="3.5" fill="#fff" stroke="#607b74" stroke-width="2"/><circle cx="145" cy="265" r="3.5" fill="#fff" stroke="#607b74" stroke-width="2"/>
+            <g class="node--circuit" transform="translate(14 192)"><rect width="160" height="126" rx="8" fill="#fffbf5" stroke="#efdabb" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M4 4h16v3H4V4Zm0 5h2v11H4V9Zm4 0h2v11H8V9Zm4 0h2v11h-2V9Zm4 0h2v11h-2V9Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HEATING</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">39°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 42°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">ACTIVE</text><g class="pump-glyph active" transform="translate(138 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g></g>
+            <g class="node--dhw" transform="translate(186 192)"><rect width="160" height="126" rx="8" fill="#f4fbfc" stroke="#c5e0e5" stroke-width="1.5"/><g class="node-icon" transform="translate(15 12) scale(0.55)"><path d="M12 2s7 8.5 7 13a7 7 0 1 1-14 0c0-4.5 7-13 7-13Z"/></g><text x="37" y="26" fill="#607b74" font-size="11" font-weight="800">HOT WATER</text><text x="15" y="64" fill="#173d39" font-size="30" font-weight="800">48°C</text><text x="15" y="84" fill="#56706b" font-size="10" font-weight="800">TARGET 50°C</text><text x="15" y="108" fill="#52716c" font-size="10" font-weight="800">IDLE</text><g class="pump-glyph" transform="translate(138 24) scale(0.75)"><circle r="12" class="pump-ring"/><circle r="9" class="pump-body"/><path d="M-3.2 -5 5 0 -3.2 5 Z" class="pump-blade"/></g><g class="heater-glyph active" transform="translate(114 24) scale(0.75)"><circle r="12" class="heater-ring"/><circle r="9" class="heater-body"/><path d="M1.8 -7.2 -4.5 0.9 -0.5 0.9 -1.8 7.2 4.5 -0.9 0.5 -0.9 Z" class="heater-bolt"/></g></g>
           </svg>
         </div>
         <div class="controls">

@@ -88,6 +88,13 @@ export type EcoMaxDiagramCardConfig = {
   show_controls?: boolean;
 
   /**
+   * Subtle motion: flowing pipes while a circuit is pumping, a gentle glow pulse
+   * on the pump/fan indicator while active, a pulse on an active status pill,
+   * and a brief highlight when a displayed value changes. Default: true.
+   */
+  show_animations?: boolean;
+
+  /**
    * Add any extra diagnostic tiles you want rendered alongside the built-in
    * diagnostics grid. Useful for exposing additional ecoMAX entities without
    * changing code.
