@@ -56,6 +56,21 @@ function heaterGlyph(cx: number, cy: number, active: boolean, r = 9): string {
   </g>`;
 }
 
+/** Mixing valve that blends the boiler's supply on its way to the heating circuit/DHW branches. */
+function mixerGlyph(cx: number, cy: number, active: boolean, r = 11): string {
+  return `
+  <g class="mixerGlyph ${active ? "is-active" : ""}" transform="translate(${cx} ${cy})">
+    <title>Mixing valve ${active ? "active" : "idle"}</title>
+    <rect class="mixerRing" x="${-(r + 4)}" y="${-(r + 4)}" width="${(r + 4) * 2}" height="${(r + 4) * 2}" rx="${((r + 4) * 0.35).toFixed(1)}"/>
+    <rect class="mixerBody" x="${-r}" y="${-r}" width="${r * 2}" height="${r * 2}" rx="${(r * 0.35).toFixed(1)}" transform="rotate(45)"/>
+    <path class="mixerArrow" d="M${(-r * 0.45).toFixed(1)} 0 H${(r * 0.45).toFixed(1)} M0 ${(-r * 0.45).toFixed(1)} V${(r * 0.45).toFixed(1)}"/>
+  </g>`;
+}
+
+function junctionGlyph(cx: number, cy: number): string {
+  return `<circle class="systemJunction" cx="${cx}" cy="${cy}" r="4"/>`;
+}
+
 export function renderSystemDiagram(
   values: DiagramValues,
   entities: EntityMap,
@@ -82,10 +97,15 @@ export function renderSystemDiagram(
     ${entityLink(entities.outside_temperature, `<text class="${flashClass("outside", changed).trim()}" text-anchor="middle" dominant-baseline="central">OUTSIDE ${esc(values.outside)}</text>`)}
   </g>
 
-  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M286 135 H412"/>
-  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M412 170 H286"/>
-  <path class="systemPipe systemPipe--hot ${dhwFlow ? "is-active" : ""}" d="M286 260 H412"/>
-  <path class="systemPipe systemPipe--return ${dhwFlow ? "is-active" : ""}" d="M412 295 H286"/>
+  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M390 235 V190 H415"/>
+  <path class="systemPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M430 175 V160"/>
+  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M500 160 V190 H445"/>
+  <path class="systemPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M430 205 V300 H286"/>
+  <path class="systemPipe systemPipe--return ${dhwFlow ? "is-active" : ""}" d="M680 280 H620 V300 H430"/>
+  ${entityLink(entities.mixer_work_mode, mixerGlyph(430, 190, hotFlow))}
+  <path class="systemPipe systemPipe--hot ${hotFlow || dhwFlow ? "is-active" : ""}" d="M286 235 H680"/>
+  ${junctionGlyph(390, 235)}
+  ${junctionGlyph(430, 300)}
 
   <g class="systemNode systemNode--boiler" transform="translate(52 100)">
     <rect width="234" height="230" rx="8"/>
@@ -102,7 +122,7 @@ export function renderSystemDiagram(
     ${pumpGlyph(207, 29, values.heatingPump)}
   </g>
 
-  <g class="systemNode systemNode--circuit" transform="translate(412 100)">
+  <g class="systemNode systemNode--circuit" transform="translate(380 55)">
     <rect width="228" height="105" rx="8"/>
     ${nodeIcon("radiator", 20, 16, 0.6)}
     <text class="nodeKicker" x="44" y="31">HEATING CIRCUIT</text>
@@ -112,7 +132,7 @@ export function renderSystemDiagram(
     ${pumpGlyph(200, 29, values.mixerPump)}
   </g>
 
-  <g class="systemNode systemNode--dhw" transform="translate(412 225)">
+  <g class="systemNode systemNode--dhw" transform="translate(680 190)">
     <rect width="228" height="105" rx="8"/>
     ${nodeIcon("droplet", 20, 16, 0.6)}
     <text class="nodeKicker" x="44" y="31">HOT WATER</text>
@@ -130,10 +150,12 @@ function renderCompactSystemDiagram(
   entities: EntityMap,
   changed?: ReadonlySet<keyof DiagramValues>
 ): string {
+  const hotFlow = values.heatingPump || values.mixerPump;
+
   return `
-<svg class="systemDiagram systemDiagram--compact" viewBox="0 0 360 322" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ecoMAX compact heating system status">
-  <rect class="systemSurface" width="360" height="322" rx="10"/>
-  <rect class="systemGrid" width="360" height="322" rx="10"/>
+<svg class="systemDiagram systemDiagram--compact" viewBox="0 0 360 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ecoMAX compact heating system status">
+  <rect class="systemSurface" width="360" height="420" rx="10"/>
+  <rect class="systemGrid" width="360" height="420" rx="10"/>
   <g class="outsideReading" transform="translate(120 14)">
     <rect width="120" height="24" rx="4"/>
     ${entityLink(entities.outside_temperature, `<text class="${flashClass("outside", changed).trim()}" x="60" y="16" text-anchor="middle">OUTSIDE ${esc(values.outside)}</text>`)}
@@ -147,10 +169,18 @@ function renderCompactSystemDiagram(
     <text class="nodeCaption" x="16" y="95">${esc(values.boilerLoad)} OUTPUT · ${esc(values.fuelLevel)} FUEL · ${esc(stateLabel(values.heatingPump))}</text>
     ${pumpGlyph(308, 24, values.heatingPump, 5)}
   </g>
-  <path class="compactPipe systemPipe--hot ${values.mixerPump ? "is-active" : ""}" d="M97 164 V184"/>
-  <path class="compactPipe systemPipe--hot ${values.dhwPump ? "is-active" : ""}" d="M263 164 V184"/>
-  <g class="compactNode compactNode--circuit" transform="translate(14 184)">
-    <rect width="160" height="126" rx="8"/>
+  <path class="compactPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M180 235 H112"/>
+  <path class="compactPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M105 242 V285"/>
+  <path class="compactPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M55 285 V235 H98"/>
+  <path class="compactPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M105 228 H145 V265"/>
+  <path class="compactPipe systemPipe--return ${hotFlow || values.dhwPump ? "is-active" : ""}" d="M145 265 V164"/>
+  <path class="compactPipe systemPipe--return ${values.dhwPump ? "is-active" : ""}" d="M310 285 V265 H145"/>
+  ${entityLink(entities.mixer_work_mode, mixerGlyph(105, 235, hotFlow))}
+  <path class="compactPipe systemPipe--hot ${hotFlow || values.dhwPump ? "is-active" : ""}" d="M180 164 V235 H263 V285"/>
+  ${junctionGlyph(180, 235)}
+  ${junctionGlyph(145, 265)}
+  <g class="compactNode compactNode--circuit" transform="translate(14 285)">
+    <rect width="160" height="118" rx="8"/>
     ${nodeIcon("radiator", 15, 12, 0.55)}
     <text class="nodeKicker" x="37" y="26">HEATING</text>
     ${entityLink(entities.mixer_temperature, `<text class="compactValue${flashClass("mixerNow", changed)}" x="15" y="64">${esc(values.mixerNow)}</text>`)}
@@ -158,8 +188,8 @@ function renderCompactSystemDiagram(
     <text class="nodeCaption" x="15" y="108">${esc(stateLabel(values.mixerPump))}</text>
     ${pumpGlyph(138, 24, values.mixerPump, 5)}
   </g>
-  <g class="compactNode compactNode--dhw" transform="translate(186 184)">
-    <rect width="160" height="126" rx="8"/>
+  <g class="compactNode compactNode--dhw" transform="translate(186 285)">
+    <rect width="160" height="118" rx="8"/>
     ${nodeIcon("droplet", 15, 12, 0.55)}
     <text class="nodeKicker" x="37" y="26">HOT WATER</text>
     ${entityLink(entities.dhw_temperature, `<text class="compactValue${flashClass("dhwNow", changed)}" x="15" y="64">${esc(values.dhwNow)}</text>`)}

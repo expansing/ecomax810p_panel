@@ -88,9 +88,9 @@ export type EcoMaxDiagramCardConfig = {
   show_controls?: boolean;
 
   /**
-   * Subtle motion: flowing pipes while a circuit is pumping, a spinning pump/fan
-   * glyph while active, a gentle pulse on an active status pill, and a brief
-   * highlight when a displayed value changes. Default: true.
+   * Subtle motion: flowing pipes while a circuit is pumping, a gentle glow pulse
+   * on the pump/fan indicator while active, a pulse on an active status pill,
+   * and a brief highlight when a displayed value changes. Default: true.
    */
   show_animations?: boolean;
 

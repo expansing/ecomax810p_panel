@@ -385,6 +385,7 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .outsideReading text{fill:#41665e;font-size:11px;font-weight:800;letter-spacing:0}
   .systemPipe{fill:none;stroke:#d3dfdc;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
   .systemPipe.is-active.systemPipe--hot{stroke:#d96d4f}.systemPipe.is-active.systemPipe--return{stroke:#4f99a7}
+  .systemJunction{fill:#fff;stroke:#607b74;stroke-width:2}
   .systemNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}
   .systemNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.systemNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .nodeIcon path{fill:#3f8f7e}
@@ -404,21 +405,29 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .heaterGlyph.is-active .heaterBody{fill:#fdf1dc;stroke:#d9921a}
   .heaterGlyph .heaterBolt{fill:#aabcb8}
   .heaterGlyph.is-active .heaterBolt{fill:#b8720f}
+  .mixerGlyph .mixerRing{fill:none;stroke:transparent}
+  .mixerGlyph.is-active .mixerRing{stroke:rgba(184,132,47,.32);stroke-width:3}
+  .mixerGlyph .mixerBody{fill:#eef3f1;stroke:#c6dad4;stroke-width:1.5}
+  .mixerGlyph.is-active .mixerBody{fill:#fdf3df;stroke:#b8842f}
+  .mixerGlyph .mixerArrow{stroke:#aabcb8;stroke-width:2;stroke-linecap:round}
+  .mixerGlyph.is-active .mixerArrow{stroke:#8a611f}
   .compactNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}.compactNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.compactNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
   .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round;stroke:#d3dfdc}.compactPipe.is-active{stroke:#d96d4f}
 
   /* Subtle, opt-in motion (config: show_animations). Off by default in markup unless .cardShell--animated is present. */
   @keyframes pipeFlow{to{stroke-dashoffset:-48}}
-  @keyframes pumpSpin{to{transform:rotate(360deg)}}
+  @keyframes pumpPulse{0%,100%{opacity:.5}50%{opacity:1}}
   @keyframes statePulse{0%,100%{box-shadow:0 0 0 0 rgba(43,186,120,.35)}50%{box-shadow:0 0 0 5px rgba(43,186,120,0)}}
   @keyframes valueFlash{0%{opacity:.35}100%{opacity:1}}
   .cardShell--animated .systemPipe.is-active,.cardShell--animated .compactPipe.is-active{stroke-dasharray:14 10;animation:pipeFlow 1s linear infinite}
-  .cardShell--animated .pumpGlyph.is-active .pumpBlade{transform-box:fill-box;transform-origin:center;animation:pumpSpin 1.4s linear infinite}
+  .cardShell--animated .pumpGlyph.is-active .pumpRing{animation:pumpPulse 1.6s ease-in-out infinite}
+  .cardShell--animated .mixerGlyph.is-active .mixerRing{animation:pumpPulse 1.6s ease-in-out infinite}
   .cardShell--animated .overviewState--active{animation:statePulse 2.2s ease-in-out infinite}
   .cardShell--animated .valueFlash{animation:valueFlash .6s ease-out}
   @media (prefers-reduced-motion:reduce){
     .cardShell--animated .systemPipe.is-active,.cardShell--animated .compactPipe.is-active,
-    .cardShell--animated .pumpGlyph.is-active .pumpBlade,
+    .cardShell--animated .pumpGlyph.is-active .pumpRing,
+    .cardShell--animated .mixerGlyph.is-active .mixerRing,
     .cardShell--animated .overviewState--active,
     .cardShell--animated .valueFlash{animation:none}
   }
@@ -438,28 +447,30 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .entityLink{cursor:pointer}
   .entityLink:hover,.entityLink:focus-visible{opacity:.8;outline:none}
 
-  .cardShell--dark{background:linear-gradient(145deg,#172622 0%,#101b19 100%);color:#e6f1ed}
-  .cardShell--dark .overview{border-color:#2d4943;background:#192b27}.cardShell--dark .overviewEyebrow{color:#9cb8b0}.cardShell--dark .overviewTitle{color:#f0f8f5}
-  .cardShell--dark .overviewServing{color:#9cb8b0}
-  .cardShell--dark .overviewState--active{background:#173d2c;color:#8de0ac}
-  .cardShell--dark .overviewState--idle{background:#20302c;color:#a9c0b9}
-  .cardShell--dark .overviewState--warn{background:#4a3a1c;color:#f0c473}
-  .cardShell--dark .overviewState--alert{background:#4a2824;color:#ffb1a3}
-  .cardShell--dark .overviewState--unknown{background:#24312d;color:#8fa39d}
-  .cardShell--dark .systemSurface{fill:#13211e;stroke:#2e4942}.cardShell--dark .systemGrid{color:#75988f}.cardShell--dark .outsideReading rect{fill:#20352f;stroke:#3d5d55}.cardShell--dark .outsideReading text{fill:#bad9d0}
-  .cardShell--dark .systemPipe{stroke:#35514a}.cardShell--dark .systemPipe.is-active.systemPipe--hot,.cardShell--dark .compactPipe.is-active{stroke:#eb8062}.cardShell--dark .systemPipe.is-active.systemPipe--return{stroke:#63adba}
-  .cardShell--dark .systemNode rect,.cardShell--dark .compactNode rect{fill:#1d302b;stroke:#38554e}.cardShell--dark .systemNode--circuit rect,.cardShell--dark .compactNode--circuit rect{fill:#332d23;stroke:#665537}.cardShell--dark .systemNode--dhw rect,.cardShell--dark .compactNode--dhw rect{fill:#1a3034;stroke:#365c64}
+  .cardShell--dark{background:linear-gradient(145deg,#151618 0%,#08090a 100%);color:#e8eaed}
+  .cardShell--dark .overview{border-color:#303238;background:#17181b}.cardShell--dark .overviewEyebrow{color:#aeb3ba}.cardShell--dark .overviewTitle{color:#f4f5f7}
+  .cardShell--dark .overviewServing{color:#aeb3ba}
+  .cardShell--dark .overviewState--active{background:#1d3025;color:#9ee3b7}
+  .cardShell--dark .overviewState--idle{background:#292b2f;color:#c3c7cc}
+  .cardShell--dark .overviewState--warn{background:#3d311d;color:#f0c473}
+  .cardShell--dark .overviewState--alert{background:#422725;color:#ffb1a3}
+  .cardShell--dark .overviewState--unknown{background:#292b2f;color:#b9bec4}
+  .cardShell--dark .systemSurface{fill:#111214;stroke:#303238}.cardShell--dark .systemGrid{color:#73777d}.cardShell--dark .outsideReading rect{fill:#222428;stroke:#3a3d42}.cardShell--dark .outsideReading text{fill:#d3d7dc}
+  .cardShell--dark .systemPipe{stroke:#3a3d42}.cardShell--dark .systemPipe.is-active.systemPipe--hot,.cardShell--dark .compactPipe.is-active{stroke:#eb8062}.cardShell--dark .systemPipe.is-active.systemPipe--return{stroke:#63adba}
+  .cardShell--dark .systemJunction{fill:#1b1d20;stroke:#c3c7cc}
+  .cardShell--dark .systemNode rect,.cardShell--dark .compactNode rect{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .systemNode--circuit rect,.cardShell--dark .compactNode--circuit rect{fill:#29251e;stroke:#635338}.cardShell--dark .systemNode--dhw rect,.cardShell--dark .compactNode--dhw rect{fill:#1b2528;stroke:#365c64}
   .cardShell--dark .nodeIcon path{fill:#7fd0b8}.cardShell--dark .systemNode--circuit .nodeIcon path,.cardShell--dark .compactNode--circuit .nodeIcon path{fill:#e0b463}.cardShell--dark .systemNode--dhw .nodeIcon path,.cardShell--dark .compactNode--dhw .nodeIcon path{fill:#7fc4dd}
-  .cardShell--dark .nodeKicker,.cardShell--dark .nodeTarget,.cardShell--dark .nodeCaption,.cardShell--dark .nodeLabel{fill:#aac4bd}.cardShell--dark .nodeValue,.cardShell--dark .compactValue,.cardShell--dark .nodeDetail{fill:#f1faf6}.cardShell--dark .nodeRule{stroke:#38554e}.cardShell--dark .compactPipe{stroke:#35514a}
-  .cardShell--dark .pumpGlyph .pumpBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#173d2c;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#5c7770}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
-  .cardShell--dark .heaterGlyph .heaterBody{fill:#1d302b;stroke:#38554e}.cardShell--dark .heaterGlyph.is-active .heaterBody{fill:#3d2f16;stroke:#e0a838}.cardShell--dark .heaterGlyph .heaterBolt{fill:#5c7770}.cardShell--dark .heaterGlyph.is-active .heaterBolt{fill:#f0c05e}.cardShell--dark .heaterGlyph.is-active .heaterRing{stroke:rgba(224,168,56,.35)}
-  .cardShell--dark .stats{background:#14231f}.cardShell--dark .tile{background:#1d302b;border-color:#38554e}.cardShell--dark .tileIcon{background:#29443d}.cardShell--dark .tileIcon svg{fill:#9de1ca}.cardShell--dark .tileValue{color:#f0f8f5}.cardShell--dark .tileLabel{color:#acc4bd}.cardShell--dark .tile--active{border-color:#478467;box-shadow:inset 3px 0 #42c985}.cardShell--dark .tile--alert{border-color:#aa5e53;box-shadow:inset 3px 0 #e57866}.cardShell--dark .tile--spin .tileIcon{background:#4a3823}.cardShell--dark .tile--spin .tileIcon svg{fill:#ffc875}
-  .cardShell--dark .tile--clickable:hover,.cardShell--dark .tile--clickable:focus-visible{border-color:#4c7167}
-  .cardShell--dark .controls{background:#14231f;border-color:#38554e}
-  .cardShell--dark .ctrlSwitch{background:#1d302b;border-color:#38554e}
+  .cardShell--dark .nodeKicker,.cardShell--dark .nodeTarget,.cardShell--dark .nodeCaption,.cardShell--dark .nodeLabel{fill:#c3c7cc}.cardShell--dark .nodeValue,.cardShell--dark .compactValue,.cardShell--dark .nodeDetail{fill:#f4f5f7}.cardShell--dark .nodeRule{stroke:#3a3d42}.cardShell--dark .compactPipe{stroke:#3a3d42}
+  .cardShell--dark .pumpGlyph .pumpBody{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#1d3025;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#888d94}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
+  .cardShell--dark .heaterGlyph .heaterBody{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .heaterGlyph.is-active .heaterBody{fill:#3d2f16;stroke:#e0a838}.cardShell--dark .heaterGlyph .heaterBolt{fill:#888d94}.cardShell--dark .heaterGlyph.is-active .heaterBolt{fill:#f0c05e}.cardShell--dark .heaterGlyph.is-active .heaterRing{stroke:rgba(224,168,56,.35)}
+  .cardShell--dark .mixerGlyph .mixerBody{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .mixerGlyph.is-active .mixerBody{fill:#3a2f18;stroke:#d9a83e}.cardShell--dark .mixerGlyph .mixerArrow{stroke:#888d94}.cardShell--dark .mixerGlyph.is-active .mixerArrow{stroke:#e0b463}.cardShell--dark .mixerGlyph.is-active .mixerRing{stroke:rgba(217,168,56,.32)}
+  .cardShell--dark .stats{background:#111214}.cardShell--dark .tile{background:#1b1d20;border-color:#3a3d42}.cardShell--dark .tileIcon{background:#292c31}.cardShell--dark .tileIcon svg{fill:#c3c7cc}.cardShell--dark .tileValue{color:#f4f5f7}.cardShell--dark .tileLabel{color:#c3c7cc}.cardShell--dark .tile--active{border-color:#478467;box-shadow:inset 3px 0 #42c985}.cardShell--dark .tile--alert{border-color:#aa5e53;box-shadow:inset 3px 0 #e57866}.cardShell--dark .tile--spin .tileIcon{background:#3b3024}.cardShell--dark .tile--spin .tileIcon svg{fill:#ffc875}
+  .cardShell--dark .tile--clickable:hover,.cardShell--dark .tile--clickable:focus-visible{border-color:#5a5e65}
+  .cardShell--dark .controls{background:#111214;border-color:#3a3d42}
+  .cardShell--dark .ctrlSwitch{background:#1b1d20;border-color:#3a3d42}
   .cardShell--dark .ctrlSwitch.is-on{background:#2bba78;border-color:#2bba78}
-  .cardShell--dark .ctrlStepBtn{background:#1d302b;border-color:#38554e;color:#f1faf6}
-  .cardShell--dark .ctrlChip{background:#1d302b;border-color:#38554e;color:#aac4bd}
+  .cardShell--dark .ctrlStepBtn{background:#1b1d20;border-color:#3a3d42;color:#f4f5f7}
+  .cardShell--dark .ctrlChip{background:#1b1d20;border-color:#3a3d42;color:#c3c7cc}
   .cardShell--dark .ctrlChip.is-active{background:#2bba78;border-color:#2bba78;color:#0d2118}
 
   :host([data-narrow]) .overview{min-height:76px;padding:14px 16px;gap:10px}
@@ -687,39 +698,64 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       return;
     }
 
-    // Build rows in HTML; then wire up hass/pickers after innerHTML.
-    const rows = [
-      ["Operation state", "state"],
-      ["Alert", "alert"],
-      ["Connection status", "connection_status"],
-      ["Outside temperature", "outside_temperature"],
-      ["Boiler load", "boiler_load"],
-      ["Fuel level", "fuel_level"],
-      ["Fan power", "fan_power"],
-      ["Boiler temperature", "boiler_temperature"],
-      ["Boiler target temperature", "boiler_target_temperature"],
-      ["Boiler power switch", "boiler_switch"],
-      ["Boiler target temperature control", "boiler_target_temperature_control"],
-      ["Mixer temperature", "mixer_temperature"],
-      ["Mixer target temperature", "mixer_target_temperature"],
-      ["Mixer target temperature control", "mixer_target_temperature_control"],
-      ["DHW temperature", "dhw_temperature"],
-      ["DHW target temperature", "dhw_target_temperature"],
-      ["DHW electric heater switch", "dhw_electric_heater"],
-      ["Flue/exhaust temperature", "exhaust_temperature"],
-      ["Feeder temperature", "feeder_temperature"],
-      ["Oxygen level", "oxygen_level"],
-      ["Summer mode", "summer_mode"],
-      ["Mixer work mode", "mixer_work_mode"],
-      ["Water heater", "water_heater"],
-      ["Heating pump running", "heating_pump_running"],
-      ["DHW pump running", "dhw_pump_running"],
-      ["Mixer pump running", "mixer_pump_running"],
-      ["Circulation pump running", "circulation_pump_running"],
-      ["Fan running", "fan_running"],
-      ["Exhaust fan running", "exhaust_fan_running"],
-      ["Feeder running", "feeder_running"],
-      ["Lighter running", "lighter_running"]
+    // Each writable mode is mapped once: the card uses the same select entity for its value and control.
+    const entityGroups = [
+      {
+        title: "System status",
+        rows: [
+          ["Operation state", "state"],
+          ["Alert", "alert"],
+          ["Connection status", "connection_status"],
+          ["Outside temperature", "outside_temperature"],
+          ["Summer mode (display & control)", "summer_mode"]
+        ]
+      },
+      {
+        title: "Boiler",
+        rows: [
+          ["Boiler temperature", "boiler_temperature"],
+          ["Boiler target temperature", "boiler_target_temperature"],
+          ["Boiler power switch", "boiler_switch"],
+          ["Boiler target temperature control", "boiler_target_temperature_control"],
+          ["Boiler load", "boiler_load"],
+          ["Fuel level", "fuel_level"],
+          ["Fan power", "fan_power"],
+          ["Heating pump running", "heating_pump_running"]
+        ]
+      },
+      {
+        title: "Heating circuit & mixer",
+        rows: [
+          ["Mixer temperature", "mixer_temperature"],
+          ["Mixer target temperature", "mixer_target_temperature"],
+          ["Mixer target temperature control", "mixer_target_temperature_control"],
+          ["Mixer work mode (display & control)", "mixer_work_mode"],
+          ["Mixer pump running", "mixer_pump_running"],
+          ["Circulation pump running", "circulation_pump_running"]
+        ]
+      },
+      {
+        title: "Domestic hot water",
+        rows: [
+          ["Water heater (display & control)", "water_heater"],
+          ["DHW temperature", "dhw_temperature"],
+          ["DHW target temperature", "dhw_target_temperature"],
+          ["DHW electric heater switch", "dhw_electric_heater"],
+          ["DHW pump running", "dhw_pump_running"]
+        ]
+      },
+      {
+        title: "Diagnostics",
+        rows: [
+          ["Flue/exhaust temperature", "exhaust_temperature"],
+          ["Feeder temperature", "feeder_temperature"],
+          ["Oxygen level", "oxygen_level"],
+          ["Fan running", "fan_running"],
+          ["Exhaust fan running", "exhaust_fan_running"],
+          ["Feeder running", "feeder_running"],
+          ["Lighter running", "lighter_running"]
+        ]
+      }
     ];
 
     const top = this._config;
@@ -780,8 +816,11 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
   </div>
 </div>
 
+${entityGroups
+  .map(
+    ({ title, rows }) => `
 <div class="section">
-  <div class="sectionTitle">Entities</div>
+  <div class="sectionTitle">${esc(title)}</div>
   ${rows
     .map(([label, key]) => {
       const value = (top.entities as any)?.[key] ?? "";
@@ -793,7 +832,9 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
       `;
     })
     .join("")}
-</div>
+</div>`
+  )
+  .join("")}
 
 <div class="section">
   <div class="sectionTitle">Extra tiles</div>
