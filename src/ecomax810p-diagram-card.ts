@@ -169,7 +169,17 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       return;
     }
 
-    const { title, entities, theme, show_diagnostics, show_controls, show_animations, extra_tiles } = this._config;
+    const {
+      title,
+      entities,
+      theme,
+      show_diagnostics,
+      show_controls,
+      show_animations,
+      disabled_diagnostics,
+      disabled_controls,
+      extra_tiles
+    } = this._config;
     const narrow = this._isNarrow();
     if (narrow) this.setAttribute("data-narrow", "");
     else this.removeAttribute("data-narrow");
@@ -181,6 +191,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
 
     const isDark = theme === "dark" || (theme !== "light" && this._hass.themes?.darkMode === true);
     const wrapClass = ["cardShell", isDark ? "cardShell--dark" : "", animate ? "cardShell--animated" : ""].filter(Boolean).join(" ");
+    const isDiagHidden = (key: string): boolean => Array.isArray(disabled_diagnostics) && disabled_diagnostics.includes(key);
+    const isCtrlHidden = (key: string): boolean => Array.isArray(disabled_controls) && disabled_controls.includes(key);
     const showDiagnostics = show_diagnostics !== false;
     const hass = this._hass;
 
@@ -303,14 +315,18 @@ export class EcoMax810pDiagramCard extends HTMLElement {
       </div>`;
     };
 
-    const summerModeTile = controlModeTile("Summer mode", entities.summer_mode);
-    const mixerModeTile = controlModeTile("Mixer work mode", entities.mixer_work_mode);
+    const summerModeTile = isCtrlHidden("summer_mode") ? "" : controlModeTile("Summer mode", entities.summer_mode);
+    const mixerModeTile = isCtrlHidden("mixer_work_mode") ? "" : controlModeTile("Mixer work mode", entities.mixer_work_mode);
 
     const controlTiles = [
-      controlToggleTile("Boiler power", entities.boiler_switch),
-      controlStepperTile("Boiler target", entities.boiler_target_temperature_control, "number"),
-      controlStepperTile("Heating circuit target", entities.mixer_target_temperature_control, "number"),
-      controlStepperTile("DHW target", entities.water_heater, "water_heater"),
+      isCtrlHidden("boiler_switch") ? "" : controlToggleTile("Boiler power", entities.boiler_switch),
+      isCtrlHidden("boiler_target_temperature_control")
+        ? ""
+        : controlStepperTile("Boiler target", entities.boiler_target_temperature_control, "number"),
+      isCtrlHidden("mixer_target_temperature_control")
+        ? ""
+        : controlStepperTile("Heating circuit target", entities.mixer_target_temperature_control, "number"),
+      isCtrlHidden("water_heater") ? "" : controlStepperTile("DHW target", entities.water_heater, "water_heater"),
       summerModeTile,
       mixerModeTile
     ].filter(Boolean);
@@ -318,29 +334,30 @@ export class EcoMax810pDiagramCard extends HTMLElement {
     const controlsHtml =
       show_controls !== false && controlTiles.length ? `<div class="controls">${controlTiles.join("")}</div>` : "";
 
-    // Avoid restating mode info the control tiles above already show and let you change.
-    const modesTile = summerModeTile && mixerModeTile
+    // Sensor tiles for shared display+control entities are independent from whether their control is shown.
+    const summerModeSensorTile = isDiagHidden("summer_mode")
       ? ""
-      : summerModeTile
-        ? tile("Mixer work mode", v.mixerMode, iconAlert, "", entities.mixer_work_mode)
-        : mixerModeTile
-          ? tile("Summer mode", v.summerMode, iconAlert, "", entities.summer_mode)
-          : tile("Modes", `${v.summerMode} / ${v.mixerMode}`, iconAlert);
+      : tile("Summer mode", v.summerMode, iconAlert, "", entities.summer_mode);
+    const mixerModeSensorTile = isDiagHidden("mixer_work_mode")
+      ? ""
+      : tile("Mixer work mode", v.mixerMode, iconAlert, "", entities.mixer_work_mode);
 
     const diagnosticsHtml = showDiagnostics
       ? `
   <div class="stats">
-    ${tile("Fan output", v.fanPower, iconFan, v.fanRunning ? "tile--spin" : "", entities.fan_power, changedKeys.has("fanPower"))}
-    ${tile("Flue temp", v.exhaustTemp, iconThermo, v.exhaustFanRunning ? "tile--active" : "", entities.exhaust_temperature, changedKeys.has("exhaustTemp"))}
-    ${tile("Feeder temp", v.feederTemp, iconThermo, v.feederRunning ? "tile--active" : "", entities.feeder_temperature, changedKeys.has("feederTemp"))}
-    ${tile("O₂ level", v.o2, iconThermo, "", entities.oxygen_level, changedKeys.has("o2"))}
-    ${tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "", entities.circulation_pump_running)}
-    ${tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "", entities.lighter_running)}
-    ${modesTile}
+    ${isDiagHidden("fan_power") ? "" : tile("Fan output", v.fanPower, iconFan, v.fanRunning ? "tile--spin" : "", entities.fan_power, changedKeys.has("fanPower"))}
+    ${isDiagHidden("exhaust_temperature") ? "" : tile("Flue temp", v.exhaustTemp, iconThermo, v.exhaustFanRunning ? "tile--active" : "", entities.exhaust_temperature, changedKeys.has("exhaustTemp"))}
+    ${isDiagHidden("feeder_temperature") ? "" : tile("Feeder temp", v.feederTemp, iconThermo, v.feederRunning ? "tile--active" : "", entities.feeder_temperature, changedKeys.has("feederTemp"))}
+    ${isDiagHidden("oxygen_level") ? "" : tile("O₂ level", v.o2, iconThermo, "", entities.oxygen_level, changedKeys.has("o2"))}
+    ${isDiagHidden("circulation_pump_running") ? "" : tile("Circulation pump", yesNo(v.circulationPump), iconPump, v.circulationPump ? "tile--active" : "", entities.circulation_pump_running)}
+    ${isDiagHidden("lighter_running") ? "" : tile("Lighter", yesNo(v.lighterRunning), iconAlert, v.lighterRunning ? "tile--active" : "", entities.lighter_running)}
+    ${summerModeSensorTile}
+    ${mixerModeSensorTile}
     ${extraTilesHtml}
   </div>
 `
       : "";
+
 
     this.shadowRoot.innerHTML = `
 <style>
@@ -383,7 +400,8 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .systemGrid{fill:url(#systemGrid);color:#527b73}
   .outsideReading rect{fill:#e8f1ee;stroke:#c8dcd5;stroke-width:1}
   .outsideReading text{fill:#41665e;font-size:11px;font-weight:800;letter-spacing:0}
-  .systemPipe{fill:none;stroke:#d3dfdc;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+  .systemPipe{fill:none;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+  .systemPipe--hot{stroke:#e9c4b2}.systemPipe--return{stroke:#b7d7dc}
   .systemPipe.is-active.systemPipe--hot{stroke:#d96d4f}.systemPipe.is-active.systemPipe--return{stroke:#4f99a7}
   .systemJunction{fill:#fff;stroke:#607b74;stroke-width:2}
   .systemNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}
@@ -412,7 +430,9 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .mixerGlyph .mixerArrow{stroke:#aabcb8;stroke-width:2;stroke-linecap:round}
   .mixerGlyph.is-active .mixerArrow{stroke:#8a611f}
   .compactNode rect{fill:#fff;stroke:#d2e0dc;stroke-width:1.5}.compactNode--circuit rect{fill:#fffbf5;stroke:#efdabb}.compactNode--dhw rect{fill:#f4fbfc;stroke:#c5e0e5}
-  .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round;stroke:#d3dfdc}.compactPipe.is-active{stroke:#d96d4f}
+  .compactValue{fill:#173d39;font-size:30px;font-weight:800}.compactPipe{fill:none;stroke-width:7;stroke-linecap:round}
+  .compactPipe.systemPipe--hot{stroke:#e9c4b2}.compactPipe.systemPipe--return{stroke:#b7d7dc}
+  .compactPipe.is-active.systemPipe--hot{stroke:#d96d4f}.compactPipe.is-active.systemPipe--return{stroke:#4f99a7}
 
   /* Subtle, opt-in motion (config: show_animations). Off by default in markup unless .cardShell--animated is present. */
   @keyframes pipeFlow{to{stroke-dashoffset:-48}}
@@ -456,11 +476,14 @@ export class EcoMax810pDiagramCard extends HTMLElement {
   .cardShell--dark .overviewState--alert{background:#422725;color:#ffb1a3}
   .cardShell--dark .overviewState--unknown{background:#292b2f;color:#b9bec4}
   .cardShell--dark .systemSurface{fill:#111214;stroke:#303238}.cardShell--dark .systemGrid{color:#73777d}.cardShell--dark .outsideReading rect{fill:#222428;stroke:#3a3d42}.cardShell--dark .outsideReading text{fill:#d3d7dc}
-  .cardShell--dark .systemPipe{stroke:#3a3d42}.cardShell--dark .systemPipe.is-active.systemPipe--hot,.cardShell--dark .compactPipe.is-active{stroke:#eb8062}.cardShell--dark .systemPipe.is-active.systemPipe--return{stroke:#63adba}
+  .cardShell--dark .systemPipe--hot,.cardShell--dark .compactPipe.systemPipe--hot{stroke:#4a372c}
+  .cardShell--dark .systemPipe--return,.cardShell--dark .compactPipe.systemPipe--return{stroke:#274044}
+  .cardShell--dark .systemPipe.is-active.systemPipe--hot,.cardShell--dark .compactPipe.is-active.systemPipe--hot{stroke:#eb8062}
+  .cardShell--dark .systemPipe.is-active.systemPipe--return,.cardShell--dark .compactPipe.is-active.systemPipe--return{stroke:#63adba}
   .cardShell--dark .systemJunction{fill:#1b1d20;stroke:#c3c7cc}
   .cardShell--dark .systemNode rect,.cardShell--dark .compactNode rect{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .systemNode--circuit rect,.cardShell--dark .compactNode--circuit rect{fill:#29251e;stroke:#635338}.cardShell--dark .systemNode--dhw rect,.cardShell--dark .compactNode--dhw rect{fill:#1b2528;stroke:#365c64}
   .cardShell--dark .nodeIcon path{fill:#7fd0b8}.cardShell--dark .systemNode--circuit .nodeIcon path,.cardShell--dark .compactNode--circuit .nodeIcon path{fill:#e0b463}.cardShell--dark .systemNode--dhw .nodeIcon path,.cardShell--dark .compactNode--dhw .nodeIcon path{fill:#7fc4dd}
-  .cardShell--dark .nodeKicker,.cardShell--dark .nodeTarget,.cardShell--dark .nodeCaption,.cardShell--dark .nodeLabel{fill:#c3c7cc}.cardShell--dark .nodeValue,.cardShell--dark .compactValue,.cardShell--dark .nodeDetail{fill:#f4f5f7}.cardShell--dark .nodeRule{stroke:#3a3d42}.cardShell--dark .compactPipe{stroke:#3a3d42}
+  .cardShell--dark .nodeKicker,.cardShell--dark .nodeTarget,.cardShell--dark .nodeCaption,.cardShell--dark .nodeLabel{fill:#c3c7cc}.cardShell--dark .nodeValue,.cardShell--dark .compactValue,.cardShell--dark .nodeDetail{fill:#f4f5f7}.cardShell--dark .nodeRule{stroke:#3a3d42}
   .cardShell--dark .pumpGlyph .pumpBody{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .pumpGlyph.is-active .pumpBody{fill:#1d3025;stroke:#42c985}.cardShell--dark .pumpGlyph .pumpBlade{fill:#888d94}.cardShell--dark .pumpGlyph.is-active .pumpBlade{fill:#5be79c}.cardShell--dark .pumpGlyph.is-active .pumpRing{stroke:rgba(66,201,133,.35)}
   .cardShell--dark .heaterGlyph .heaterBody{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .heaterGlyph.is-active .heaterBody{fill:#3d2f16;stroke:#e0a838}.cardShell--dark .heaterGlyph .heaterBolt{fill:#888d94}.cardShell--dark .heaterGlyph.is-active .heaterBolt{fill:#f0c05e}.cardShell--dark .heaterGlyph.is-active .heaterRing{stroke:rgba(224,168,56,.35)}
   .cardShell--dark .mixerGlyph .mixerBody{fill:#1b1d20;stroke:#3a3d42}.cardShell--dark .mixerGlyph.is-active .mixerBody{fill:#3a2f18;stroke:#d9a83e}.cardShell--dark .mixerGlyph .mixerArrow{stroke:#888d94}.cardShell--dark .mixerGlyph.is-active .mixerArrow{stroke:#e0b463}.cardShell--dark .mixerGlyph.is-active .mixerRing{stroke:rgba(217,168,56,.32)}
@@ -647,6 +670,23 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
     this._fireChanged();
   }
 
+  /** Toggles one item's membership in a `disabled_*` array (checked = visible/enabled). */
+  private _arrayToggleChanged(ev: Event, arrayKey: "disabled_diagnostics" | "disabled_controls"): void {
+    if (!this._config) return;
+    const target = ev.currentTarget as any;
+    const itemKey = target?.dataset?.item as string | undefined;
+    if (!itemKey) return;
+
+    const checked = !!target?.checked;
+    const current = Array.isArray((this._config as any)[arrayKey]) ? [...(this._config as any)[arrayKey]] : [];
+    const idx = current.indexOf(itemKey);
+    if (checked && idx !== -1) current.splice(idx, 1);
+    if (!checked && idx === -1) current.push(itemKey);
+
+    this._config = { ...this._config, [arrayKey]: current } as EditorConfig;
+    this._fireChanged();
+  }
+
   private _addExtraTile(): void {
     if (!this._config) return;
     const tiles = Array.isArray(this._config.extra_tiles) ? [...this._config.extra_tiles] : [];
@@ -760,6 +800,26 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
 
     const top = this._config;
     const extraTiles = Array.isArray(top.extra_tiles) ? top.extra_tiles : [];
+    const disabledDiagnostics = Array.isArray(top.disabled_diagnostics) ? top.disabled_diagnostics : [];
+    const disabledControls = Array.isArray(top.disabled_controls) ? top.disabled_controls : [];
+    const diagnosticsToggles: Array<[string, string]> = [
+      ["Fan output", "fan_power"],
+      ["Flue temp", "exhaust_temperature"],
+      ["Feeder temp", "feeder_temperature"],
+      ["O₂ level", "oxygen_level"],
+      ["Circulation pump", "circulation_pump_running"],
+      ["Lighter", "lighter_running"],
+      ["Summer mode (sensor)", "summer_mode"],
+      ["Mixer work mode (sensor)", "mixer_work_mode"]
+    ];
+    const controlsToggles: Array<[string, string]> = [
+      ["Boiler power", "boiler_switch"],
+      ["Boiler target stepper", "boiler_target_temperature_control"],
+      ["Heating circuit target stepper", "mixer_target_temperature_control"],
+      ["DHW target stepper", "water_heater"],
+      ["Summer mode control", "summer_mode"],
+      ["Mixer work mode control", "mixer_work_mode"]
+    ];
 
     this.shadowRoot!.innerHTML = `
 <style>
@@ -769,6 +829,9 @@ class EcoMax810pDiagramCardEditor extends HTMLElement {
   .row{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:center;margin:8px 0}
   .rowLabel{opacity:.85;font-weight:700}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .checkGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .checkRow{display:flex;align-items:center;gap:8px}
+  .checkRow input{width:auto}
   .btn{margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid rgba(0,0,0,.2);cursor:pointer}
   .extraTile{border:1px solid rgba(0,0,0,.15);border-radius:12px;padding:10px;margin:10px 0}
   .extraTileHeader{display:flex;justify-content:space-between;align-items:center;font-weight:800}
@@ -835,6 +898,40 @@ ${entityGroups
 </div>`
   )
   .join("")}
+
+<div class="section">
+  <div class="sectionTitle">Diagnostics tiles</div>
+  <div>Uncheck any built-in tile you don't want shown, without turning off the whole diagnostics grid.</div>
+  <div class="checkGrid">
+    ${diagnosticsToggles
+      .map(
+        ([label, key]) => `
+        <label class="checkRow">
+          <input type="checkbox" data-array="disabled_diagnostics" data-item="${esc(key)}" ${disabledDiagnostics.includes(key) ? "" : "checked"}/>
+          ${esc(label)}
+        </label>
+      `
+      )
+      .join("")}
+  </div>
+</div>
+
+<div class="section">
+  <div class="sectionTitle">Controls</div>
+  <div>Uncheck any control you don't want interactive — its sensor tile (if any) is unaffected.</div>
+  <div class="checkGrid">
+    ${controlsToggles
+      .map(
+        ([label, key]) => `
+        <label class="checkRow">
+          <input type="checkbox" data-array="disabled_controls" data-item="${esc(key)}" ${disabledControls.includes(key) ? "" : "checked"}/>
+          ${esc(label)}
+        </label>
+      `
+      )
+      .join("")}
+  </div>
+</div>
 
 <div class="section">
   <div class="sectionTitle">Extra tiles</div>
@@ -911,6 +1008,14 @@ ${entityGroups
     const removeBtns = Array.from(this.shadowRoot!.querySelectorAll("button[data-remove]")) as HTMLButtonElement[];
     for (const b of removeBtns) {
       b.addEventListener("click", () => this._removeExtraTile(Number((b as any).dataset?.remove)));
+    }
+
+    const arrayToggles = Array.from(this.shadowRoot!.querySelectorAll("input[data-array]")) as HTMLInputElement[];
+    for (const el of arrayToggles) {
+      el.addEventListener("change", (ev: Event) => {
+        const arrayKey = (el as any).dataset?.array as "disabled_diagnostics" | "disabled_controls";
+        this._arrayToggleChanged(ev, arrayKey);
+      });
     }
 
     const extraControls = Array.from(this.shadowRoot!.querySelectorAll("[data-idx][data-key]:not(ha-entity-picker)")) as any[];

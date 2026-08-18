@@ -95,6 +95,25 @@ export type EcoMaxDiagramCardConfig = {
   show_animations?: boolean;
 
   /**
+   * Hide specific built-in diagnostics tiles without turning off the whole
+   * diagnostics grid. Values: `fan_power` | `exhaust_temperature` |
+   * `feeder_temperature` | `oxygen_level` | `circulation_pump_running` |
+   * `lighter_running` | `summer_mode` | `mixer_work_mode`. `summer_mode` and
+   * `mixer_work_mode` here hide only their read-only sensor tile — the
+   * interactive control (if any) is governed separately by `disabled_controls`.
+   */
+  disabled_diagnostics?: string[];
+
+  /**
+   * Hide specific interactive controls without turning off `show_controls`
+   * entirely. Values: `boiler_switch` | `boiler_target_temperature_control` |
+   * `mixer_target_temperature_control` | `water_heater` | `summer_mode` |
+   * `mixer_work_mode`. Useful when you want to see a mode as a sensor but not
+   * expose a control for it (or vice versa).
+   */
+  disabled_controls?: string[];
+
+  /**
    * Add any extra diagnostic tiles you want rendered alongside the built-in
    * diagnostics grid. Useful for exposing additional ecoMAX entities without
    * changing code.
