@@ -169,16 +169,17 @@ function renderCompactSystemDiagram(
     <text class="nodeCaption" x="16" y="95">${esc(values.boilerLoad)} OUTPUT · ${esc(values.fuelLevel)} FUEL · ${esc(stateLabel(values.heatingPump))}</text>
     ${pumpGlyph(308, 24, values.heatingPump, 5)}
   </g>
-  <path class="compactPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M180 235 H112"/>
-  <path class="compactPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M105 242 V285"/>
-  <path class="compactPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M55 285 V235 H98"/>
-  <path class="compactPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M105 228 H145 V265"/>
-  <path class="compactPipe systemPipe--return ${hotFlow || values.dhwPump ? "is-active" : ""}" d="M145 265 V164"/>
-  <path class="compactPipe systemPipe--return ${values.dhwPump ? "is-active" : ""}" d="M310 285 V265 H145"/>
-  ${entityLink(entities.mixer_work_mode, mixerGlyph(105, 235, hotFlow))}
-  <path class="compactPipe systemPipe--hot ${hotFlow || values.dhwPump ? "is-active" : ""}" d="M180 164 V235 H263 V285"/>
-  ${junctionGlyph(180, 235)}
-  ${junctionGlyph(145, 265)}
+  <path class="compactPipe systemPipe--hot ${hotFlow || values.dhwPump ? "is-active" : ""}" d="M180 164 V220"/>
+  <path class="compactPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M180 220 H69"/>
+  <path class="compactPipe systemPipe--hot ${values.dhwPump ? "is-active" : ""}" d="M180 220 H270 V285"/>
+  <path class="compactPipe systemPipe--hot ${hotFlow ? "is-active" : ""}" d="M60 229 V285"/>
+  <path class="compactPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M40 285 V220 H51"/>
+  <path class="compactPipe systemPipe--return ${hotFlow ? "is-active" : ""}" d="M60 211 V175"/>
+  <path class="compactPipe systemPipe--return ${hotFlow || values.dhwPump ? "is-active" : ""}" d="M60 175 V164"/>
+  <path class="compactPipe systemPipe--return ${values.dhwPump ? "is-active" : ""}" d="M300 285 V175 H60"/>
+  ${entityLink(entities.mixer_work_mode, mixerGlyph(60, 220, hotFlow, 5))}
+  ${junctionGlyph(180, 220)}
+  ${junctionGlyph(60, 175)}
   <g class="compactNode compactNode--circuit" transform="translate(14 285)">
     <rect width="160" height="118" rx="8"/>
     ${nodeIcon("radiator", 15, 12, 0.55)}
